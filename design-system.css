@@ -40,6 +40,9 @@
   /* The shared content column. */
   --page-width: 1040px;
   --page-gutter: 24px;
+
+  /* The sticky nav's own height, so anchored sections can scroll clear of it. */
+  --nav-height: 57px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -142,6 +145,12 @@ a:hover { color: var(--color-accent-800); }
   flex-wrap: wrap;
   /* Keeps the nav row aligned with the content column. */
   padding-inline: max(var(--page-gutter), calc((100% - var(--page-width)) / 2 + var(--page-gutter)));
+  /* The chapters run long; the nav stays reachable the whole way down. */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .site-nav .nav-brand a { text-decoration: none; color: inherit; font-size: inherit; }
@@ -170,3 +179,21 @@ a:hover { color: var(--color-accent-800); }
 }
 
 .site-footer a { color: var(--color-accent-700); }
+
+/* — narrow screens —
+   The nav row cannot fit brand, links and call to action on one line on a
+   phone, and a two-row sticky bar costs more of the viewport than it is worth.
+   Below this width it scrolls away with the rest of the page, and anchored
+   sections no longer need to clear it. */
+@media (max-width: 760px) {
+  :root { --nav-height: 0px; }
+
+  .site-nav {
+    position: static;
+    backdrop-filter: none;
+    gap: var(--space-2) var(--space-3);
+    padding-block: var(--space-2);
+  }
+
+  .nav-brand { font-size: 16px; }
+}

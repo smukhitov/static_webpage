@@ -2,12 +2,24 @@
 const { test, expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright').default;
 
+// The landing page is the index for both parts; the order here is the order
+// the rows must appear in, and every href must resolve to a real section.
 const CHAPTERS = [
-  { title: 'What Is Machine Learning?', target: 'what-is-ml' },
-  { title: 'Supervised, Unsupervised, Reinforcement', target: 'learning-types' },
-  { title: 'The Train/Test Split', target: 'train-test-split' },
-  { title: 'Overfitting', target: 'overfitting' },
-  { title: 'Common Algorithms', target: 'common-algorithms' },
+  { title: 'What Is Machine Learning?', page: 'fundamentals.html', target: 'what-is-ml' },
+  { title: 'Supervised, Unsupervised, Reinforcement', page: 'fundamentals.html', target: 'learning-types' },
+  { title: 'How a Model Actually Learns', page: 'fundamentals.html', target: 'how-models-learn' },
+  { title: 'The Train/Test Split', page: 'fundamentals.html', target: 'train-test-split' },
+  { title: 'Overfitting', page: 'fundamentals.html', target: 'overfitting' },
+  { title: 'Measuring a Model Honestly', page: 'fundamentals.html', target: 'evaluation' },
+  { title: 'Common Algorithms', page: 'fundamentals.html', target: 'common-algorithms' },
+  { title: 'Neural Networks and Deep Learning', page: 'modern-ai.html', target: 'neural-networks' },
+  { title: 'Tokens and Embeddings', page: 'modern-ai.html', target: 'tokens-embeddings' },
+  { title: 'The Transformer Architecture', page: 'modern-ai.html', target: 'transformers' },
+  { title: 'Attention, Step by Step', page: 'modern-ai.html', target: 'attention' },
+  { title: 'Large Language Models', page: 'modern-ai.html', target: 'llms' },
+  { title: 'AI Agents', page: 'modern-ai.html', target: 'agents' },
+  { title: 'Retrieval-Augmented Generation', page: 'modern-ai.html', target: 'rag' },
+  { title: 'Where These Systems Break', page: 'modern-ai.html', target: 'limits' },
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -19,24 +31,33 @@ test('the landing page is served at the site root', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(/Machine learning,\s*explained from the beginning\./);
 });
 
-test('lists all five chapters in order', async ({ page }) => {
+test('lists every chapter of both parts, in order', async ({ page }) => {
   const titles = await page.locator('.chapter .chapter-title').allTextContents();
   expect(titles).toEqual(CHAPTERS.map((c) => c.title));
 });
 
-test('every chapter links to a section that exists on the article page', async ({ page }) => {
+test('splits the chapters into the two parts', async ({ page }) => {
+  await expect(page.locator('.part')).toHaveCount(2);
+  await expect(page.locator('#part-foundations .chapter')).toHaveCount(7);
+  await expect(page.locator('#part-modern .chapter')).toHaveCount(8);
+});
+
+test('every chapter links to a section that exists on its article page', async ({ page }) => {
   const hrefs = await page.locator('.chapter').evaluateAll((links) =>
     links.map((a) => a.getAttribute('href'))
   );
-  expect(hrefs).toEqual(CHAPTERS.map((c) => `fundamentals.html#${c.target}`));
+  expect(hrefs).toEqual(CHAPTERS.map((c) => `${c.page}#${c.target}`));
 
-  await page.goto('/fundamentals.html');
-  for (const { target } of CHAPTERS) {
-    await expect(page.locator(`#${target}`)).toHaveCount(1);
+  for (const article of ['fundamentals.html', 'modern-ai.html']) {
+    await page.goto(`/${article}`);
+    const targets = CHAPTERS.filter((c) => c.page === article).map((c) => c.target);
+    for (const target of targets) {
+      await expect(page.locator(`#${target}`)).toHaveCount(1);
+    }
   }
 });
 
-test('the primary call to action opens the article', async ({ page }) => {
+test('the primary call to action opens the first chapter', async ({ page }) => {
   await page.locator('.nav-cta').click();
   await expect(page).toHaveURL(/\/fundamentals\.html#what-is-ml$/);
   await expect(page.locator('#what-is-ml')).toBeVisible();
@@ -47,6 +68,17 @@ test('chapters are revealed once scrolled into view', async ({ page }) => {
   await last.scrollIntoViewIfNeeded();
   await expect(last).toHaveClass(/is-revealed/);
   await expect(last).toHaveCSS('opacity', '1');
+});
+
+test('fits a phone screen without the page scrolling sideways', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  const { doc, win } = await page.evaluate(() => ({
+    doc: document.documentElement.scrollWidth,
+    win: window.innerWidth,
+  }));
+  expect(doc).toBeLessThanOrEqual(win);
 });
 
 test('has no detectable WCAG 2 A/AA accessibility violations', async ({ page }) => {

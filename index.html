@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Machine Learning Fundamentals</title>
-<meta name="description" content="Five short chapters on the ideas underneath machine learning: what a model is, how it learns from examples, and why one that looks perfect can still be wrong.">
+<meta name="description" content="Fifteen short chapters on how machine learning works, from what a model is through to transformers, large language models, AI agents and retrieval — each one illustrated.">
 <link rel="stylesheet" href="design-system.css">
 <link rel="stylesheet" href="landing.css">
 <script src="landing.js"></script>
@@ -12,7 +12,8 @@
 <body>
 <nav class="nav site-nav" aria-label="Primary">
   <span class="nav-brand">Machine Learning Fundamentals</span>
-  <a href="#chapters">Chapters</a>
+  <a href="#part-foundations">Foundations</a>
+  <a href="#part-modern">Modern AI</a>
   <a class="btn btn-primary nav-cta" href="fundamentals.html#what-is-ml">Start reading</a>
 </nav>
 
@@ -23,91 +24,287 @@
         <span>Machine learning,</span>
         <span>explained from the beginning.</span>
       </h1>
-      <p class="hero-lede">Five short chapters on the ideas underneath machine learning: what a model actually is, how it learns from examples, and why one that looks perfect can still be wrong.</p>
+      <p class="hero-lede">Fifteen short chapters that start with what a model actually is and end with systems that use tools to get work done. No prerequisites beyond curiosity, no equations you have to solve — and a diagram for every idea that deserves one.</p>
+      <div class="hero-meta">
+        <span><strong>2 parts</strong> · 15 chapters</span>
+        <span><strong>18 diagrams</strong>, drawn to explain</span>
+        <span>About <strong>30 minutes</strong> end to end</span>
+      </div>
     </section>
 
     <hr class="hr hr-flush">
 
-    <section id="chapters" class="chapters" aria-label="Chapters">
+    <div id="chapters">
 
-      <a class="chapter" href="fundamentals.html#what-is-ml" data-reveal>
-        <span class="chapter-num">01</span>
-        <div class="chapter-text">
-          <h2 class="chapter-title">What Is Machine Learning?</h2>
-          <p class="chapter-summary">Software that improves at a task by learning from examples, rather than following rules a programmer wrote by hand. The result is a model: a function, fitted to data.</p>
-          <p class="chapter-note">A spam filter learns from mail you already sorted — nobody writes the rule for "looks like spam".</p>
+      <section id="part-foundations" class="part" aria-labelledby="part-foundations-title">
+        <header class="part-header" data-reveal>
+          <p class="part-eyebrow">Part I</p>
+          <h2 id="part-foundations-title" class="part-title">Foundations</h2>
+          <p class="part-lede">The ideas everything else is built on: what a model is, how learning actually works as a mechanism, and the whole apparatus of not fooling yourself about how good a model is.</p>
+        </header>
+
+        <div class="chapters">
+
+          <a class="chapter" href="fundamentals.html#what-is-ml" data-reveal>
+            <span class="chapter-num">01</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">What Is Machine Learning?</h3>
+              <p class="chapter-summary">Software that improves at a task by learning from examples, rather than following rules a programmer wrote by hand. The result is a model: a function, fitted to data.</p>
+              <p class="chapter-note">A spam filter learns from mail you already sorted — nobody writes the rule for "looks like spam".</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect x="2" y="20" width="36" height="24" rx="2"></rect>
+              <path d="M42 32 H58"></path><path d="M54 28 L58 32 L54 36"></path>
+              <rect class="accent-stroke" x="62" y="20" width="36" height="24" rx="2"></rect>
+              <path d="M102 32 H118"></path><path d="M114 28 L118 32 L114 36"></path>
+              <rect x="122" y="20" width="36" height="24" rx="2"></rect>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#learning-types" data-reveal>
+            <span class="chapter-num">02</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Supervised, Unsupervised, Reinforcement</h3>
+              <p class="chapter-summary">Three ways to learn: from labeled answers, from structure found in unlabeled data, or from reward and penalty inside an environment.</p>
+              <p class="chapter-note">A fourth — self-supervised — is why language models can be trained on the open internet.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect x="4" y="22" width="7" height="7"></rect><rect x="15" y="22" width="7" height="7"></rect><rect x="26" y="22" width="7" height="7"></rect>
+              <rect x="4" y="33" width="7" height="7"></rect><rect x="15" y="33" width="7" height="7"></rect><rect x="26" y="33" width="7" height="7"></rect>
+              <circle cx="62" cy="26" r="2.5"></circle><circle cx="72" cy="20" r="2.5"></circle><circle cx="68" cy="34" r="2.5"></circle><circle cx="86" cy="40" r="2.5"></circle><circle cx="94" cy="30" r="2.5"></circle><circle cx="82" cy="28" r="2.5"></circle>
+              <ellipse class="accent-stroke" cx="68" cy="27" rx="13" ry="11" stroke-dasharray="3 3"></ellipse>
+              <path d="M134 18 A14 14 0 1 1 122 25"></path><path d="M118 20 L122 25 L127 22"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#how-models-learn" data-reveal>
+            <span class="chapter-num">03</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">How a Model Actually Learns</h3>
+              <p class="chapter-summary">Loss, gradients and gradient descent — the three-part mechanism that turns "learning" from a metaphor into arithmetic you could do by hand.</p>
+              <p class="chapter-note">The same loop trains a three-parameter line and a three-hundred-billion-parameter model.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M8 56 H152"></path>
+              <path d="M14 12 Q80 78 146 12"></path>
+              <circle cx="34" cy="29" r="3"></circle>
+              <circle cx="54" cy="40" r="3"></circle>
+              <circle class="accent-stroke" cx="80" cy="45" r="3.5"></circle>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#train-test-split" data-reveal>
+            <span class="chapter-num">04</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">The Train/Test Split</h3>
+              <p class="chapter-summary">Most of the data fits the model; a held-out portion is kept back to measure how it does on examples it never saw during training.</p>
+              <p class="chapter-note">80/20 is the common split, but the right ratio depends on how much data you have.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect class="accent-stroke" x="2" y="20" width="156" height="24" rx="2"></rect>
+              <rect class="accent-fill" x="2" y="20" width="124.8" height="24" rx="2" stroke="none"></rect>
+              <path class="accent-stroke" d="M126.8 20 V44"></path>
+              <path d="M2 52 H126.8"></path><path d="M130.8 52 H158"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#overfitting" data-reveal>
+            <span class="chapter-num">05</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Overfitting</h3>
+              <p class="chapter-summary">A model can learn the training data too well, noise and quirks included, and then fail on anything new. It memorized specifics instead of the pattern underneath.</p>
+              <p class="chapter-note">The tell: training accuracy keeps climbing while test accuracy turns and drops.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M8 6 V54 H156"></path>
+              <path d="M12 16 C52 40 92 50 152 53"></path>
+              <path class="accent-stroke" d="M12 22 C48 46 78 50 152 12"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#evaluation" data-reveal>
+            <span class="chapter-num">06</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Measuring a Model Honestly</h3>
+              <p class="chapter-summary">Accuracy hides the difference between a false alarm and a miss. Precision, recall and the confusion matrix put that difference back where you can see it.</p>
+              <p class="chapter-note">A fraud detector that always answers "no" scores 99.9% and is worth nothing.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect class="accent-fill" x="56" y="14" width="24" height="24" stroke="none"></rect>
+              <rect class="accent-fill" x="80" y="38" width="24" height="24" stroke="none"></rect>
+              <rect x="56" y="14" width="24" height="24"></rect>
+              <rect x="80" y="14" width="24" height="24"></rect>
+              <rect x="56" y="38" width="24" height="24"></rect>
+              <rect x="80" y="38" width="24" height="24"></rect>
+              <path d="M40 26 H50 M40 50 H50"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="fundamentals.html#common-algorithms" data-reveal>
+            <span class="chapter-num">07</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Common Algorithms</h3>
+              <p class="chapter-summary">Linear and logistic regression, decision trees, boosted forests, k-means and neural networks — the handful that show up in every introduction, a paragraph each.</p>
+              <p class="chapter-note">On ordinary tabular data, boosted trees still beat neural networks more often than not.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M80 14 L50 32 M80 14 L110 32 M50 36 L34 52 M50 36 L66 52 M110 36 L94 52 M110 36 L126 52"></path>
+              <circle class="accent-stroke" cx="80" cy="10" r="5"></circle>
+              <circle cx="50" cy="34" r="5"></circle><circle cx="110" cy="34" r="5"></circle>
+              <rect x="30" y="52" width="8" height="8"></rect><rect x="62" y="52" width="8" height="8"></rect>
+              <rect x="90" y="52" width="8" height="8"></rect><rect x="122" y="52" width="8" height="8"></rect>
+            </svg>
+          </a>
+
         </div>
-        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
-          <rect x="2" y="20" width="36" height="24" rx="2"></rect>
-          <path d="M42 32 H58"></path><path d="M54 28 L58 32 L54 36"></path>
-          <rect class="accent-stroke" x="62" y="20" width="36" height="24" rx="2"></rect>
-          <path d="M102 32 H118"></path><path d="M114 28 L118 32 L114 36"></path>
-          <rect x="122" y="20" width="36" height="24" rx="2"></rect>
-        </svg>
-      </a>
+      </section>
 
-      <a class="chapter" href="fundamentals.html#learning-types" data-reveal>
-        <span class="chapter-num">02</span>
-        <div class="chapter-text">
-          <h2 class="chapter-title">Supervised, Unsupervised, Reinforcement</h2>
-          <p class="chapter-summary">Three ways to learn: from labeled answers, from structure found in unlabeled data, or from reward and penalty inside an environment.</p>
-          <p class="chapter-note">Reinforcement learning is how game-playing agents and robot controllers are trained.</p>
+      <section id="part-modern" class="part" aria-labelledby="part-modern-title">
+        <header class="part-header" data-reveal>
+          <p class="part-eyebrow">Part II</p>
+          <h2 id="part-modern-title" class="part-title">Transformers, LLMs and Agents</h2>
+          <p class="part-lede">One architecture underlies nearly everything called AI today. These chapters follow the chain end to end: how text becomes numbers, what a transformer does with them, how a language model is trained and run, and what has to be built around it before it can act.</p>
+        </header>
+
+        <div class="chapters">
+
+          <a class="chapter" href="modern-ai.html#neural-networks" data-reveal>
+            <span class="chapter-num">08</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Neural Networks and Deep Learning</h3>
+              <p class="chapter-summary">Layers of trivially simple units, separated by a non-linearity, trained by pushing error backwards through the stack. Depth is what lets later layers build on what earlier ones found.</p>
+              <p class="chapter-note">Remove the non-linearity and a hundred layers collapse into the expressive power of one.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M34 18L80 18M34 18L80 32M34 18L80 46M34 32L80 18M34 32L80 32M34 32L80 46M34 46L80 18M34 46L80 32M34 46L80 46M80 18L126 25M80 18L126 39M80 32L126 25M80 32L126 39M80 46L126 25M80 46L126 39"></path>
+              <circle cx="34" cy="18" r="4"></circle><circle cx="34" cy="32" r="4"></circle><circle cx="34" cy="46" r="4"></circle>
+              <circle class="accent-stroke" cx="80" cy="18" r="4"></circle><circle class="accent-stroke" cx="80" cy="32" r="4"></circle><circle class="accent-stroke" cx="80" cy="46" r="4"></circle>
+              <circle cx="126" cy="25" r="4"></circle><circle cx="126" cy="39" r="4"></circle>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#tokens-embeddings" data-reveal>
+            <span class="chapter-num">09</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Tokens and Embeddings</h3>
+              <p class="chapter-summary">A model never sees text. Words are chopped into sub-word tokens, each token becomes a learned vector, and nearness in that space stands in for similarity of meaning.</p>
+              <p class="chapter-note">It's also why models are bad at counting letters — they never saw the letters.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect x="6" y="25" width="26" height="14" rx="2"></rect>
+              <rect x="36" y="25" width="30" height="14" rx="2"></rect>
+              <rect x="70" y="25" width="20" height="14" rx="2"></rect>
+              <path d="M96 32 H108"></path><path d="M104 28 L108 32 L104 36"></path>
+              <ellipse class="accent-stroke" cx="132" cy="30" rx="18" ry="13" stroke-dasharray="3 3"></ellipse>
+              <circle cx="120" cy="22" r="2.5"></circle><circle cx="132" cy="28" r="2.5"></circle><circle cx="124" cy="40" r="2.5"></circle><circle cx="141" cy="34" r="2.5"></circle><circle cx="145" cy="22" r="2.5"></circle>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#transformers" data-reveal>
+            <span class="chapter-num">10</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">The Transformer Architecture</h3>
+              <p class="chapter-summary">One block, repeated: let the tokens exchange information, then think about each one on its own. Wrapped in residual connections, stacked a hundred deep.</p>
+              <p class="chapter-note">It won not by being cleverer than recurrent networks, but by running in parallel.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M34 58 V12"></path><path d="M30 17 L34 11 L38 17"></path>
+              <rect x="46" y="8" width="66" height="13" rx="2"></rect>
+              <rect class="accent-stroke" x="46" y="26" width="66" height="13" rx="2"></rect>
+              <rect x="46" y="44" width="66" height="13" rx="2"></rect>
+              <path d="M120 6 h6 v53 h-6"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#attention" data-reveal>
+            <span class="chapter-num">11</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Attention, Step by Step</h3>
+              <p class="chapter-summary">Query, key and value: every token asks a question, every token advertises what it has, and each one rebuilds itself from a weighted blend of the answers.</p>
+              <p class="chapter-note">Comparing every token with every token is why long context costs what it does.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect class="accent-fill" x="56" y="8" width="12" height="12" stroke="none"></rect>
+              <rect class="accent-fill" x="56" y="20" width="24" height="12" stroke="none"></rect>
+              <rect class="accent-fill" x="56" y="32" width="36" height="12" stroke="none"></rect>
+              <rect class="accent-fill" x="56" y="44" width="48" height="12" stroke="none"></rect>
+              <rect x="56" y="8" width="12" height="12"></rect><rect x="68" y="8" width="12" height="12"></rect><rect x="80" y="8" width="12" height="12"></rect><rect x="92" y="8" width="12" height="12"></rect>
+              <rect x="56" y="20" width="12" height="12"></rect><rect x="68" y="20" width="12" height="12"></rect><rect x="80" y="20" width="12" height="12"></rect><rect x="92" y="20" width="12" height="12"></rect>
+              <rect x="56" y="32" width="12" height="12"></rect><rect x="68" y="32" width="12" height="12"></rect><rect x="80" y="32" width="12" height="12"></rect><rect x="92" y="32" width="12" height="12"></rect>
+              <rect x="56" y="44" width="12" height="12"></rect><rect x="68" y="44" width="12" height="12"></rect><rect x="80" y="44" width="12" height="12"></rect><rect x="92" y="44" width="12" height="12"></rect>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#llms" data-reveal>
+            <span class="chapter-num">12</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Large Language Models</h3>
+              <p class="chapter-summary">Pretrained on trillions of tokens to predict the next one, then tuned on instructions and human preference until it is worth talking to. At inference it writes one token at a time.</p>
+              <p class="chapter-note">Everything it "knows" mid-conversation is either in the weights or in the context.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M10 20 H46 M10 30 H40 M10 40 H46"></path>
+              <path d="M56 30 H70"></path><path d="M66 26 L70 30 L66 34"></path>
+              <path d="M80 52 H150"></path>
+              <rect class="accent-stroke" x="84" y="20" width="12" height="32"></rect>
+              <rect x="100" y="32" width="12" height="20"></rect>
+              <rect x="116" y="40" width="12" height="12"></rect>
+              <rect x="132" y="45" width="12" height="7"></rect>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#agents" data-reveal>
+            <span class="chapter-num">13</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">AI Agents</h3>
+              <p class="chapter-summary">A model in a loop with tools: it decides an action, something else executes it, the result returns as new context, and round it goes until the goal is met or the budget runs out.</p>
+              <p class="chapter-note">Text fetched by a tool is data, not instructions — forgetting that is prompt injection.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect class="accent-stroke" x="26" y="24" width="18" height="16" rx="2"></rect>
+              <path d="M44 32 H84"></path><path d="M80 28 L84 32 L80 36"></path>
+              <path d="M112 16 A16 16 0 1 1 98 24"></path><path d="M94 19 L98 24 L103 21"></path>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#rag" data-reveal>
+            <span class="chapter-num">14</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Retrieval-Augmented Generation</h3>
+              <p class="chapter-summary">Rather than hoping the answer is in the weights, find the relevant passages first and put them in the prompt. Ask for citations so a grounded answer is distinguishable from a fluent guess.</p>
+              <p class="chapter-note">Most RAG systems fail at chunking and retrieval, not at generation.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <rect x="10" y="22" width="22" height="28" rx="2"></rect>
+              <rect x="15" y="17" width="22" height="28" rx="2"></rect>
+              <rect x="20" y="12" width="22" height="28" rx="2"></rect>
+              <path d="M48 32 H64"></path><path d="M60 28 L64 32 L60 36"></path>
+              <circle class="accent-stroke" cx="80" cy="28" r="10"></circle>
+              <path class="accent-stroke" d="M87 35 L94 42"></path>
+              <path d="M100 32 H114"></path><path d="M110 28 L114 32 L110 36"></path>
+              <rect x="118" y="20" width="34" height="24" rx="2"></rect>
+            </svg>
+          </a>
+
+          <a class="chapter" href="modern-ai.html#limits" data-reveal>
+            <span class="chapter-num">15</span>
+            <div class="chapter-text">
+              <h3 class="chapter-title">Where These Systems Break</h3>
+              <p class="chapter-summary">Hallucination, lost context, prompt injection, compounding error. Each one follows from the architecture rather than from insufficient training — which is what makes them designable-around.</p>
+              <p class="chapter-note">And the part everyone skips: evaluating any of it on something other than vibes.</p>
+            </div>
+            <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+              <path d="M14 16 H70 M14 32 H70 M14 48 H70"></path>
+              <path class="accent-stroke" d="M88 16 l5 5 l10 -11"></path>
+              <path d="M88 27 L100 39 M100 27 L88 39"></path>
+              <path class="accent-stroke" d="M88 48 l5 5 l10 -11"></path>
+            </svg>
+          </a>
+
         </div>
-        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
-          <rect x="4" y="22" width="7" height="7"></rect><rect x="15" y="22" width="7" height="7"></rect><rect x="26" y="22" width="7" height="7"></rect>
-          <rect x="4" y="33" width="7" height="7"></rect><rect x="15" y="33" width="7" height="7"></rect><rect x="26" y="33" width="7" height="7"></rect>
-          <circle cx="62" cy="26" r="2.5"></circle><circle cx="72" cy="20" r="2.5"></circle><circle cx="68" cy="34" r="2.5"></circle><circle cx="86" cy="40" r="2.5"></circle><circle cx="94" cy="30" r="2.5"></circle><circle cx="82" cy="28" r="2.5"></circle>
-          <ellipse class="accent-stroke" cx="68" cy="27" rx="13" ry="11" stroke-dasharray="3 3"></ellipse>
-          <path d="M134 18 A14 14 0 1 1 122 25"></path><path d="M118 20 L122 25 L127 22"></path>
-        </svg>
-      </a>
+      </section>
 
-      <a class="chapter" href="fundamentals.html#train-test-split" data-reveal>
-        <span class="chapter-num">03</span>
-        <div class="chapter-text">
-          <h2 class="chapter-title">The Train/Test Split</h2>
-          <p class="chapter-summary">Most of the data fits the model; a held-out portion is kept back to measure how it does on examples it never saw during training.</p>
-          <p class="chapter-note">80/20 is the common split, but the right ratio depends on how much data you have.</p>
-        </div>
-        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
-          <rect class="accent-stroke" x="2" y="20" width="156" height="24" rx="2"></rect>
-          <rect class="accent-fill" x="2" y="20" width="124.8" height="24" rx="2" stroke="none"></rect>
-          <path class="accent-stroke" d="M126.8 20 V44"></path>
-          <path d="M2 52 H126.8"></path><path d="M130.8 52 H158"></path>
-        </svg>
-      </a>
-
-      <a class="chapter" href="fundamentals.html#overfitting" data-reveal>
-        <span class="chapter-num">04</span>
-        <div class="chapter-text">
-          <h2 class="chapter-title">Overfitting</h2>
-          <p class="chapter-summary">A model can learn the training data too well, noise and quirks included, and then fail on anything new. It memorized specifics instead of the pattern underneath.</p>
-          <p class="chapter-note">The tell: training accuracy keeps climbing while test accuracy turns and drops.</p>
-        </div>
-        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
-          <path d="M8 6 V54 H156"></path>
-          <path d="M12 16 C52 40 92 50 152 53"></path>
-          <path class="accent-stroke" d="M12 22 C48 46 78 50 152 12"></path>
-        </svg>
-      </a>
-
-      <a class="chapter" href="fundamentals.html#common-algorithms" data-reveal>
-        <span class="chapter-num">05</span>
-        <div class="chapter-text">
-          <h2 class="chapter-title">Common Algorithms</h2>
-          <p class="chapter-summary">Linear and logistic regression, decision trees, k-means clustering and neural networks — the handful that show up in every introduction, a paragraph each.</p>
-          <p class="chapter-note">Logistic regression, despite the name, is used for classification rather than regression.</p>
-        </div>
-        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
-          <path d="M80 14 L50 32 M80 14 L110 32 M50 36 L34 52 M50 36 L66 52 M110 36 L94 52 M110 36 L126 52"></path>
-          <circle class="accent-stroke" cx="80" cy="10" r="5"></circle>
-          <circle cx="50" cy="34" r="5"></circle><circle cx="110" cy="34" r="5"></circle>
-          <rect x="30" y="52" width="8" height="8"></rect><rect x="62" y="52" width="8" height="8"></rect>
-          <rect x="90" y="52" width="8" height="8"></rect><rect x="122" y="52" width="8" height="8"></rect>
-        </svg>
-      </a>
-
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">

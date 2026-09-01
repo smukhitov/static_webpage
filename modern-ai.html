@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Learning Fundamentals — Part II: Transformers, LLMs and Agents</title>
+<meta name="description" content="How modern AI works: neural networks, tokens and embeddings, the transformer architecture, self-attention step by step, how large language models are trained and run, AI agents and tool use, retrieval-augmented generation, and where these systems break.">
+<link rel="stylesheet" href="design-system.css">
+<link rel="stylesheet" href="article.css">
+<script src="article.js"></script>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><div class="progress-bar"></div></div>
+
+<nav class="nav site-nav" aria-label="Primary">
+  <span class="nav-brand"><a href="index.html">Machine Learning Fundamentals</a></span>
+  <a href="fundamentals.html">Foundations</a>
+  <a href="modern-ai.html" aria-current="page">Modern AI</a>
+  <a class="btn btn-primary nav-cta" href="index.html#chapters">All chapters</a>
+</nav>
+
+<div class="container">
+  <main class="article">
+    <header>
+      <p class="article-eyebrow">Part II</p>
+      <h1 class="article-title">Transformers, LLMs and Agents</h1>
+      <p class="article-lede">Almost everything called "AI" today is one architecture, trained one way, wrapped in one of a few patterns. This part follows the chain from a character of text to a system that can act: how text becomes numbers, what a transformer does with them, how a language model is trained and run, and what has to be built around it before it can do anything on your behalf.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 152" class="diagram diagram-wide" role="img" aria-labelledby="m0-title">
+            <title id="m0-title">The chain covered by this part: text becomes tokens, tokens flow through a transformer, the language model predicts tokens, and an agent loops the model against tools</title>
+            <rect x="10" y="40" width="110" height="52" rx="6" class="box"/>
+            <text x="65" y="60" class="box-label">Text</text>
+            <text x="65" y="78" class="box-sublabel">characters</text>
+            <line x1="120" y1="66" x2="128" y2="66" class="arrow"/>
+            <polygon points="128,60 140,66 128,72" class="arrow-head"/>
+
+            <rect x="140" y="40" width="110" height="52" rx="6" class="box"/>
+            <text x="195" y="60" class="box-label">Tokens</text>
+            <text x="195" y="78" class="box-sublabel">as vectors</text>
+            <line x1="250" y1="66" x2="258" y2="66" class="arrow"/>
+            <polygon points="258,60 270,66 258,72" class="arrow-head"/>
+
+            <rect x="270" y="40" width="110" height="52" rx="6" class="box box-accent"/>
+            <text x="325" y="60" class="box-label-inverse">Transformer</text>
+            <text x="325" y="78" class="box-sublabel-inverse">attention × N</text>
+            <line x1="380" y1="66" x2="388" y2="66" class="arrow"/>
+            <polygon points="388,60 400,66 388,72" class="arrow-head"/>
+
+            <rect x="400" y="40" width="110" height="52" rx="6" class="box"/>
+            <text x="455" y="60" class="box-label">LLM</text>
+            <text x="455" y="78" class="box-sublabel">next token</text>
+            <line x1="510" y1="66" x2="518" y2="66" class="arrow"/>
+            <polygon points="518,60 530,66 518,72" class="arrow-head"/>
+
+            <rect x="530" y="40" width="100" height="52" rx="6" class="box"/>
+            <text x="580" y="60" class="box-label">Agent</text>
+            <text x="580" y="78" class="box-sublabel">tools + loop</text>
+
+            <path d="M606 92 V122 H72" class="arrow-accent"/>
+            <polygon points="72,116 60,122 72,128" class="arrow-head-accent"/>
+            <text x="330" y="142" class="note note-mid note-accent">whatever a tool returns comes back in as more text</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">The five chapters that follow, in order. The return arc at the bottom is the part that turns a text predictor into something that does work: an agent's own actions produce new text, which becomes the next input.</figcaption>
+      </figure>
+
+      <nav id="contents" class="toc" aria-label="Contents">
+        <span class="toc-label">Contents</span>
+        <ul>
+          <li><a href="#neural-networks">Neural Networks</a></li>
+          <li><a href="#tokens-embeddings">Tokens &amp; Embeddings</a></li>
+          <li><a href="#transformers">The Transformer</a></li>
+          <li><a href="#attention">Attention</a></li>
+          <li><a href="#llms">Large Language Models</a></li>
+          <li><a href="#agents">AI Agents</a></li>
+          <li><a href="#rag">Retrieval</a></li>
+          <li><a href="#limits">Where It Breaks</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="neural-networks" class="section">
+      <h2>Neural Networks and Deep Learning</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>A neural network is a stack of simple linear steps separated by a non-linearity — and depth is what lets later layers build on what earlier ones found.</p>
+      </div>
+
+      <p>The unit of a neural network is deliberately unimpressive. It takes some numbers in, multiplies each by a <strong>weight</strong>, adds a <strong>bias</strong>, and passes the total through a non-linear <strong>activation function</strong> — most often ReLU, which simply replaces negatives with zero. Thousands of these arranged in layers, and the whole thing becomes a general-purpose function approximator.</p>
+      <p>The non-linearity is not decoration. Without it, a stack of linear layers collapses algebraically into a single linear layer, and a hundred layers would be exactly as expressive as one. The activation function is what makes depth mean anything.</p>
+      <p>Running data through the network is the <strong>forward pass</strong>: values enter at the input layer, each layer transforms them, and the output layer produces a prediction. Training runs the same machinery backwards. A loss function scores the prediction; <strong>backpropagation</strong> applies the chain rule layer by layer to work out how much each individual weight contributed to that error; gradient descent nudges every weight accordingly. That is the entire training loop, repeated over batches for many passes through the data.</p>
+      <p>"Deep" just means many layers, and depth buys <strong>hierarchy</strong>. In a vision network, early layers respond to edges, middle layers to shapes and textures, late layers to whole objects. In a language model, early layers deal in surface patterns — spelling, morphology — and later layers in syntax, reference and meaning. Nobody designs that hierarchy; it falls out of training a deep enough network on enough data.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 268" class="diagram diagram-wide" role="img" aria-labelledby="m1-title">
+            <title id="m1-title">A four-layer neural network with three inputs, two hidden layers and two outputs, fully connected, with the forward pass running left to right and backpropagation running right to left</title>
+            <line x1="70" y1="22" x2="556" y2="22" class="arrow"/>
+            <polygon points="556,16 568,22 556,28" class="arrow-head"/>
+            <text x="320" y="12" class="note note-mid">forward pass — inputs in, prediction out</text>
+
+            <path class="edge" d="M90 55L250 43M90 55L250 88M90 55L250 133M90 55L250 178M90 110L250 43M90 110L250 88M90 110L250 133M90 110L250 178M90 165L250 43M90 165L250 88M90 165L250 133M90 165L250 178"/>
+            <path class="edge" d="M250 43L410 43M250 43L410 88M250 43L410 133M250 43L410 178M250 88L410 43M250 88L410 88M250 88L410 133M250 88L410 178M250 133L410 43M250 133L410 88M250 133L410 133M250 133L410 178M250 178L410 43M250 178L410 88M250 178L410 133M250 178L410 178"/>
+            <path class="edge" d="M410 43L550 88M410 43L550 133M410 88L550 88M410 88L550 133M410 133L550 88M410 133L550 133M410 178L550 88M410 178L550 133"/>
+
+            <circle cx="90" cy="55" r="12" class="node"/>
+            <circle cx="90" cy="110" r="12" class="node"/>
+            <circle cx="90" cy="165" r="12" class="node"/>
+            <circle cx="250" cy="43" r="12" class="node"/>
+            <circle cx="250" cy="88" r="12" class="node"/>
+            <circle cx="250" cy="133" r="12" class="node"/>
+            <circle cx="250" cy="178" r="12" class="node"/>
+            <circle cx="410" cy="43" r="12" class="node"/>
+            <circle cx="410" cy="88" r="12" class="node"/>
+            <circle cx="410" cy="133" r="12" class="node"/>
+            <circle cx="410" cy="178" r="12" class="node"/>
+            <circle cx="550" cy="88" r="12" class="node node-accent"/>
+            <circle cx="550" cy="133" r="12" class="node node-accent"/>
+
+            <text x="90" y="212" class="tick tick-mid">Input</text>
+            <text x="250" y="212" class="tick tick-mid">Hidden</text>
+            <text x="410" y="212" class="tick tick-mid">Hidden</text>
+            <text x="550" y="212" class="tick tick-mid">Output</text>
+
+            <line x1="568" y1="238" x2="82" y2="238" class="arrow-accent"/>
+            <polygon points="82,232 70,238 82,244" class="arrow-head-accent"/>
+            <text x="320" y="258" class="note note-mid note-accent">backpropagation — error back, every weight adjusted</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">Every line is one weight — a number the training process is free to change. This toy network has 36 of them; a frontier language model has hundreds of billions, but the mechanism moving each one is the same.</figcaption>
+      </figure>
+    </section>
+
+    <section id="tokens-embeddings" class="section">
+      <h2>Tokens and Embeddings</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>A model never sees text. It sees integers that index a table of learned vectors, in a space where nearness means "used in similar ways".</p>
+      </div>
+
+      <p>Before any of the interesting machinery runs, text has to become numbers, and that happens in two steps.</p>
+      <p>The first is <strong>tokenization</strong>. Text is chopped into tokens — usually sub-word units chosen by an algorithm such as byte-pair encoding, which starts from characters and repeatedly merges the most frequent adjacent pair. The effect is that common words end up as a single token while rare ones split into pieces, so the vocabulary stays a fixed size (typically 50,000–200,000 entries) and no input is ever out-of-vocabulary. As a rule of thumb, one token is about four characters of English, or three-quarters of a word. Tokens are also the unit in which context limits are measured and inference is billed, which is why the concept leaks out of the architecture and into pricing pages.</p>
+      <p>Tokenization explains a family of otherwise baffling model failures. Counting the letters in a word is hard for a model that never saw letters; arithmetic is uneven because numbers split into token chunks inconsistently; and languages that tokenize inefficiently cost more per sentence.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 148" class="diagram diagram-wide" role="img" aria-labelledby="m2-title">
+            <title id="m2-title">A sentence split into six sub-word tokens, each mapped to an integer id</title>
+            <rect x="10" y="22" width="330" height="40" rx="6" class="box"/>
+            <text x="175" y="42" class="box-label">Tokenization isn’t obvious.</text>
+            <line x1="185" y1="62" x2="185" y2="68" class="arrow"/>
+            <polygon points="179,68 185,79 191,68" class="arrow-head"/>
+
+            <rect x="10" y="84" width="56" height="30" rx="4" class="box box-accent"/>
+            <text x="38" y="99" class="box-label-inverse">Token</text>
+            <rect x="72" y="84" width="62" height="30" rx="4" class="box box-accent"/>
+            <text x="103" y="99" class="box-label-inverse">ization</text>
+            <rect x="142" y="84" width="40" height="30" rx="4" class="box"/>
+            <text x="162" y="99" class="box-label">isn</text>
+            <rect x="188" y="84" width="32" height="30" rx="4" class="box"/>
+            <text x="204" y="99" class="box-label">’t</text>
+            <rect x="226" y="84" width="66" height="30" rx="4" class="box"/>
+            <text x="259" y="99" class="box-label">obvious</text>
+            <rect x="298" y="84" width="26" height="30" rx="4" class="box"/>
+            <text x="311" y="99" class="box-label">.</text>
+
+            <text x="38" y="134" class="note note-mid">30642</text>
+            <text x="103" y="134" class="note note-mid">2065</text>
+            <text x="162" y="134" class="note note-mid">4436</text>
+            <text x="204" y="134" class="note note-mid">956</text>
+            <text x="259" y="134" class="note note-mid">8195</text>
+            <text x="311" y="134" class="note note-mid">13</text>
+
+            <text x="370" y="94" class="note">27 characters · 6 tokens</text>
+            <text x="370" y="114" class="note">one uncommon word splits in two</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">"Tokenization" is rare enough to be split into two pieces; "obvious" is common enough to survive whole. The model works with the ids on the bottom row — the words above them are a convenience for us.</figcaption>
+      </figure>
+
+      <p>The second step is the <strong>embedding</strong>. Each token id indexes a row of a large learned matrix, retrieving a vector of hundreds or thousands of numbers. That vector is the model's entire starting representation of the token, and — crucially — it is learned during training rather than designed.</p>
+      <p>What makes embeddings useful is that the geometry ends up meaningful. Tokens used in similar contexts land near each other, so distance approximates similarity. Directions carry relationships too: the classic demonstration is that the offset from <em>man</em> to <em>king</em> is roughly the offset from <em>woman</em> to <em>queen</em>. Real embedding spaces are messier than the textbook picture, but the intuition holds, and it is exactly what makes embeddings the substrate for semantic search, clustering, deduplication and the retrieval systems later in this part.</p>
+      <p>One thing embeddings do <em>not</em> carry is position. Attention, as the next chapter shows, is order-blind by construction, so position has to be injected separately — as fixed sinusoidal patterns in the original transformer, and as rotary position embeddings (RoPE) in most current models.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 252" class="diagram diagram-wide" role="img" aria-labelledby="m3-title">
+            <title id="m3-title">A two-dimensional sketch of an embedding space: king above man, queen above woman with the same offset, and an unrelated cluster of animal words far away</title>
+            <rect x="40" y="20" width="380" height="200" rx="4" class="box" fill-opacity="0.35"/>
+
+            <line x1="150" y1="173" x2="142" y2="86" class="arrow-accent"/>
+            <polygon points="135,90 140,76 147,89" class="arrow-head-accent"/>
+            <line x1="260" y1="163" x2="252" y2="76" class="arrow-accent"/>
+            <polygon points="245,80 250,66 257,79" class="arrow-head-accent"/>
+
+            <circle cx="140" cy="70" r="5" class="node node-accent"/>
+            <text x="152" y="66" class="tick">king</text>
+            <circle cx="250" cy="60" r="5" class="node node-accent"/>
+            <text x="262" y="56" class="tick">queen</text>
+            <circle cx="150" cy="180" r="5" class="node node-accent"/>
+            <text x="162" y="184" class="tick">man</text>
+            <circle cx="260" cy="170" r="5" class="node node-accent"/>
+            <text x="272" y="174" class="tick">woman</text>
+
+            <ellipse cx="352" cy="150" rx="48" ry="38" class="group-frame"/>
+            <circle cx="336" cy="130" r="4" class="node"/>
+            <text x="345" y="126" class="tick">dog</text>
+            <circle cx="368" cy="152" r="4" class="node"/>
+            <text x="377" y="148" class="tick">cat</text>
+            <circle cx="340" cy="172" r="4" class="node"/>
+            <text x="349" y="176" class="tick">puppy</text>
+
+            <text x="230" y="240" class="note note-mid">two of several thousand dimensions</text>
+
+            <text x="450" y="70" class="note">Distance stands in for</text>
+            <text x="450" y="88" class="note">similarity of use.</text>
+            <text x="450" y="118" class="note">Direction stands in for</text>
+            <text x="450" y="136" class="note">relationship: the gap from</text>
+            <text x="450" y="154" class="note">man to king matches the</text>
+            <text x="450" y="172" class="note">gap from woman to queen.</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">A flattened cartoon of a space with thousands of dimensions. The two gold arrows being parallel is the whole point: relationships are encoded as directions, which is why you can do arithmetic on meaning and get something sensible back.</figcaption>
+      </figure>
+    </section>
+
+    <section id="transformers" class="section">
+      <h2>The Transformer Architecture</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Each layer does two things: let the tokens exchange information, then think about each token on its own. Stack that block enough times and you have a language model.</p>
+      </div>
+
+      <p>The transformer arrived in 2017 in a paper titled <em>Attention Is All You Need</em>, and it replaced the recurrent networks that had dominated sequence modelling. The reason was less about accuracy than about hardware. A recurrent network reads a sequence one token at a time, each step waiting on the last — inherently sequential, and therefore slow to train. A transformer processes every position of the sequence simultaneously. That maps cleanly onto GPUs, and it is the reason training at today's scale became possible at all.</p>
+      <p>The architecture is a single block repeated. Each block has two sub-layers:</p>
+      <ul>
+        <li><strong>Multi-head self-attention</strong> — the only place where information moves <em>between</em> positions. Each token gathers what it needs from the other tokens.</li>
+        <li><strong>A feed-forward network</strong> — a small two-layer network applied to each position independently and identically. This is where most of the parameters live, and the current best guess is that it is where most factual knowledge is stored.</li>
+      </ul>
+      <p>Each sub-layer is wrapped in two things that are easy to overlook and essential in practice. A <strong>residual connection</strong> adds the sub-layer's input back to its output, giving gradients a short path all the way down a very deep stack — without it, networks this deep do not train. And <strong>layer normalisation</strong> rescales activations to keep them in a stable range as they pass through dozens of blocks.</p>
+      <p>After the last block, a final normalisation and a linear projection map each position's vector to one score per vocabulary entry, and a softmax turns those scores into probabilities. The number of blocks is the model's depth: 12 in the smallest GPT-2, of the order of a hundred in frontier models. Same shape every time, different learned weights.</p>
+      <p>Three variants are worth being able to tell apart. <strong>Encoder-only</strong> models such as BERT see the whole sequence at once in both directions and are used for classification and embeddings. <strong>Decoder-only</strong> models — the GPT family and essentially every chat model — see only the tokens before each position, which is what makes generation possible. <strong>Encoder-decoder</strong> models such as T5 read one sequence and write another, the natural shape for translation.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 462" class="diagram diagram-wide" role="img" aria-labelledby="m4-title">
+            <title id="m4-title">A decoder-only transformer stack: tokens are embedded with positional information, then pass through N identical blocks of multi-head self-attention and a feed-forward network, each wrapped in a residual connection and layer normalisation, before a final projection and softmax over the vocabulary</title>
+            <rect x="190" y="8" width="260" height="38" rx="6" class="box"/>
+            <text x="320" y="27" class="box-label">Input tokens</text>
+            <line x1="320" y1="46" x2="320" y2="56" class="arrow"/>
+            <polygon points="314,56 320,68 326,56" class="arrow-head"/>
+
+            <rect x="190" y="68" width="260" height="46" rx="6" class="box"/>
+            <text x="320" y="88" class="box-label">Token embedding</text>
+            <text x="320" y="105" class="box-sublabel">+ positional encoding</text>
+            <line x1="320" y1="114" x2="320" y2="124" class="arrow"/>
+            <polygon points="314,124 320,136 326,124" class="arrow-head"/>
+
+            <rect x="150" y="136" width="340" height="180" rx="6" class="group-frame"/>
+            <path d="M492 136 h8 v180 h-8" class="axis"/>
+            <text x="508" y="219" class="group-label">× N</text>
+            <text x="508" y="236" class="note">identical blocks</text>
+
+            <rect x="190" y="154" width="260" height="42" rx="6" class="box box-accent"/>
+            <text x="320" y="175" class="box-label-inverse">Multi-head self-attention</text>
+
+            <line x1="320" y1="136" x2="320" y2="154" class="arrow"/>
+            <path d="M320 147 H170 V212 H299" class="arrow"/>
+            <polygon points="299,206 311,212 299,218" class="arrow-head"/>
+            <line x1="320" y1="196" x2="320" y2="203" class="arrow"/>
+            <circle cx="320" cy="212" r="9" class="op"/>
+            <text x="320" y="212" class="op-label">+</text>
+            <text x="338" y="216" class="note">add &amp; normalise</text>
+
+            <line x1="320" y1="221" x2="320" y2="226" class="arrow"/>
+            <polygon points="314,226 320,236 326,226" class="arrow-head"/>
+
+            <rect x="190" y="236" width="260" height="42" rx="6" class="box"/>
+            <text x="320" y="257" class="box-label">Feed-forward network</text>
+
+            <path d="M320 228 H178 V294 H299" class="arrow"/>
+            <polygon points="299,288 311,294 299,300" class="arrow-head"/>
+            <line x1="320" y1="278" x2="320" y2="285" class="arrow"/>
+            <circle cx="320" cy="294" r="9" class="op"/>
+            <text x="320" y="294" class="op-label">+</text>
+            <text x="338" y="298" class="note">add &amp; normalise</text>
+
+            <line x1="320" y1="303" x2="320" y2="328" class="arrow"/>
+            <polygon points="314,328 320,340 326,328" class="arrow-head"/>
+
+            <rect x="190" y="340" width="260" height="42" rx="6" class="box"/>
+            <text x="320" y="361" class="box-label">Final norm → linear map</text>
+            <line x1="320" y1="382" x2="320" y2="392" class="arrow"/>
+            <polygon points="314,392 320,404 326,392" class="arrow-head"/>
+
+            <rect x="170" y="404" width="300" height="46" rx="6" class="box box-accent"/>
+            <text x="320" y="421" class="box-label-inverse">Softmax over the vocabulary</text>
+            <text x="320" y="439" class="box-sublabel-inverse">a probability for every possible next token</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">Read top to bottom. The two paths running down the left are the residual connections — each sub-layer's output is <em>added</em> to what went into it rather than replacing it, so a token's representation is refined by every block instead of being rebuilt by it.</figcaption>
+      </figure>
+    </section>
+
+    <section id="attention" class="section">
+      <h2>Attention, Step by Step</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Every token asks a question, every token advertises what it has, and each one rebuilds itself out of a weighted blend of the answers.</p>
+      </div>
+
+      <p>Attention is the mechanism that lets "it" in <em>the cat sat on the mat because it was warm</em> resolve to the mat. It works in four steps.</p>
+      <p><strong>1. Three projections.</strong> From each token's vector the layer computes three new vectors using learned weight matrices: a <strong>query</strong> (what this token is looking for), a <strong>key</strong> (what it offers to others), and a <strong>value</strong> (what it actually contributes if selected).</p>
+      <p><strong>2. Score.</strong> The dot product of one token's query with every token's key gives a raw relevance score for each pairing. The scores are divided by the square root of the key dimension, which keeps them from growing so large that the next step saturates.</p>
+      <p><strong>3. Normalise.</strong> A softmax across each row turns those scores into weights that sum to one — a distribution over "how much of my new representation should come from each other token".</p>
+      <p><strong>4. Mix.</strong> The output for a position is the weighted sum of every token's value vector. A token has now built a representation of itself that includes whatever context it decided was relevant.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 218" class="diagram diagram-wide" role="img" aria-labelledby="m5-title">
+            <title id="m5-title">One token's vector is projected into a query, key and value; the query and key produce a relevance score, softmax turns scores into weights, and the weighted sum of values becomes the token's new context-aware vector</title>
+            <text x="10" y="22" class="band-label">One token, one attention head</text>
+
+            <rect x="10" y="100" width="110" height="48" rx="6" class="box"/>
+            <text x="65" y="118" class="box-label">Token i</text>
+            <text x="65" y="136" class="box-sublabel">vector x</text>
+
+            <path d="M120 123 H140 V63 H148" class="arrow"/>
+            <polygon points="148,57 160,63 148,69" class="arrow-head"/>
+            <path d="M120 123 H148" class="arrow"/>
+            <polygon points="148,117 160,123 148,129" class="arrow-head"/>
+            <path d="M120 123 H140 V183 H148" class="arrow"/>
+            <polygon points="148,177 160,183 148,189" class="arrow-head"/>
+
+            <rect x="160" y="42" width="100" height="42" rx="6" class="box"/>
+            <text x="210" y="60" class="box-label">Query</text>
+            <text x="210" y="76" class="box-sublabel">x · Wq</text>
+            <rect x="160" y="102" width="100" height="42" rx="6" class="box"/>
+            <text x="210" y="120" class="box-label">Key</text>
+            <text x="210" y="136" class="box-sublabel">x · Wk</text>
+            <rect x="160" y="162" width="100" height="42" rx="6" class="box"/>
+            <text x="210" y="180" class="box-label">Value</text>
+            <text x="210" y="196" class="box-sublabel">x · Wv</text>
+
+            <line x1="260" y1="63" x2="288" y2="63" class="arrow"/>
+            <polygon points="288,57 300,63 288,69" class="arrow-head"/>
+            <path d="M260 123 H280 V78 H288" class="arrow"/>
+            <polygon points="288,72 300,78 288,84" class="arrow-head"/>
+
+            <rect x="300" y="48" width="140" height="44" rx="6" class="box"/>
+            <text x="370" y="66" class="box-label">q · kᵀ ÷ √d</text>
+            <text x="370" y="82" class="box-sublabel">raw relevance</text>
+            <line x1="370" y1="92" x2="370" y2="100" class="arrow"/>
+            <polygon points="364,100 370,112 376,100" class="arrow-head"/>
+
+            <rect x="300" y="112" width="140" height="42" rx="6" class="box box-accent"/>
+            <text x="370" y="128" class="box-label-inverse">softmax</text>
+            <text x="370" y="144" class="box-sublabel-inverse">weights sum to 1</text>
+
+            <line x1="440" y1="133" x2="452" y2="133" class="arrow"/>
+            <polygon points="452,127 464,133 452,139" class="arrow-head"/>
+            <path d="M260 183 H486 V167" class="arrow"/>
+            <polygon points="480,167 486,155 492,167" class="arrow-head"/>
+
+            <circle cx="486" cy="133" r="22" class="node node-accent"/>
+            <text x="486" y="133" class="box-label">Σ</text>
+
+            <line x1="508" y1="133" x2="522" y2="133" class="arrow"/>
+            <polygon points="522,127 534,133 522,139" class="arrow-head"/>
+            <rect x="534" y="109" width="100" height="48" rx="6" class="box"/>
+            <text x="584" y="127" class="box-label">Output</text>
+            <text x="584" y="145" class="box-sublabel">context-aware</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">The query and key decide <em>how much</em>; the value decides <em>what</em>. Separating those two roles is the trick — a token can be highly relevant to another without the information it passes on being the same as the signal that made it relevant.</figcaption>
+      </figure>
+
+      <p>Two refinements turn this into what models actually run.</p>
+      <p><strong>Multi-head attention</strong> runs the whole operation several times in parallel with different projection matrices, then concatenates the results and projects them back down. Each head is free to specialise, and in practice they do — some track syntactic dependencies, some track coreference, some mostly attend to the previous token. One attention pattern per layer would be a severe bottleneck; frontier models run tens of heads per layer.</p>
+      <p><strong>Causal masking</strong> is what makes generation work. In a decoder-only model a token may attend only to itself and the tokens before it; scores for future positions are set to negative infinity before the softmax, so their weights come out at zero. This is what allows a model to be trained on every position of a sequence at once — each position is predicting its own next token without being able to peek at the answer.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 268" class="diagram" role="img" aria-labelledby="m6-title">
+          <title id="m6-title">A six by six attention weight grid for the sentence the cat sat on the mat, with the upper triangle blank because future tokens are masked, and darker cells showing where each token places most of its attention</title>
+          <text x="258" y="18" class="note note-mid">keys — what each token offers</text>
+          <text x="104" y="152" class="note note-mid" transform="rotate(-90 104 152)">queries</text>
+
+          <text x="168" y="36" class="tick tick-mid">The</text>
+          <text x="204" y="36" class="tick tick-mid">cat</text>
+          <text x="240" y="36" class="tick tick-mid">sat</text>
+          <text x="276" y="36" class="tick tick-mid">on</text>
+          <text x="312" y="36" class="tick tick-mid">the</text>
+          <text x="348" y="36" class="tick tick-mid">mat</text>
+
+          <text x="142" y="62" class="tick tick-end">The</text>
+          <text x="142" y="98" class="tick tick-end">cat</text>
+          <text x="142" y="134" class="tick tick-end">sat</text>
+          <text x="142" y="170" class="tick tick-end">on</text>
+          <text x="142" y="206" class="tick tick-end">the</text>
+          <text x="142" y="242" class="tick tick-end">mat</text>
+
+          <rect x="150" y="44" width="36" height="36" class="cell" fill-opacity="0.92"/>
+          <rect x="186" y="44" width="36" height="36" class="cell-masked"/>
+          <rect x="222" y="44" width="36" height="36" class="cell-masked"/>
+          <rect x="258" y="44" width="36" height="36" class="cell-masked"/>
+          <rect x="294" y="44" width="36" height="36" class="cell-masked"/>
+          <rect x="330" y="44" width="36" height="36" class="cell-masked"/>
+
+          <rect x="150" y="80" width="36" height="36" class="cell" fill-opacity="0.36"/>
+          <rect x="186" y="80" width="36" height="36" class="cell" fill-opacity="0.68"/>
+          <rect x="222" y="80" width="36" height="36" class="cell-masked"/>
+          <rect x="258" y="80" width="36" height="36" class="cell-masked"/>
+          <rect x="294" y="80" width="36" height="36" class="cell-masked"/>
+          <rect x="330" y="80" width="36" height="36" class="cell-masked"/>
+
+          <rect x="150" y="116" width="36" height="36" class="cell" fill-opacity="0.24"/>
+          <rect x="186" y="116" width="36" height="36" class="cell" fill-opacity="0.32"/>
+          <rect x="222" y="116" width="36" height="36" class="cell" fill-opacity="0.6"/>
+          <rect x="258" y="116" width="36" height="36" class="cell-masked"/>
+          <rect x="294" y="116" width="36" height="36" class="cell-masked"/>
+          <rect x="330" y="116" width="36" height="36" class="cell-masked"/>
+
+          <rect x="150" y="152" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="186" y="152" width="36" height="36" class="cell" fill-opacity="0.24"/>
+          <rect x="222" y="152" width="36" height="36" class="cell" fill-opacity="0.4"/>
+          <rect x="258" y="152" width="36" height="36" class="cell" fill-opacity="0.44"/>
+          <rect x="294" y="152" width="36" height="36" class="cell-masked"/>
+          <rect x="330" y="152" width="36" height="36" class="cell-masked"/>
+
+          <rect x="150" y="188" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="186" y="188" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="222" y="188" width="36" height="36" class="cell" fill-opacity="0.24"/>
+          <rect x="258" y="188" width="36" height="36" class="cell" fill-opacity="0.28"/>
+          <rect x="294" y="188" width="36" height="36" class="cell" fill-opacity="0.48"/>
+          <rect x="330" y="188" width="36" height="36" class="cell-masked"/>
+
+          <rect x="150" y="224" width="36" height="36" class="cell" fill-opacity="0.16"/>
+          <rect x="186" y="224" width="36" height="36" class="cell" fill-opacity="0.62"/>
+          <rect x="222" y="224" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="258" y="224" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="294" y="224" width="36" height="36" class="cell" fill-opacity="0.2"/>
+          <rect x="330" y="224" width="36" height="36" class="cell" fill-opacity="0.4"/>
+        </svg>
+        <figcaption class="figure-caption">Each row is one token's attention, and each row's weights sum to one. The empty upper triangle is the causal mask: "The" can only look at itself, while "mat" can look back over the whole sentence — and here it puts most of its weight on "cat".</figcaption>
+      </figure>
+
+      <p>The cost of all this is the defining constraint of the architecture. Every token is compared with every other token, so the work grows with the <em>square</em> of the sequence length. Doubling the context length quadruples the attention computation. That single fact drives most of the engineering around long context: the KV cache that stores past keys and values so they are not recomputed for every generated token, memory-efficient implementations such as FlashAttention, and approximations like sliding-window and grouped-query attention.</p>
+    </section>
+
+    <section id="llms" class="section">
+      <h2>Large Language Models</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>An LLM is a large transformer trained on one absurdly simple objective — predict the next token — and then shaped by further training into something worth talking to.</p>
+      </div>
+
+      <p>Training happens in stages, and they do genuinely different jobs.</p>
+      <p><strong>Pretraining</strong> runs the model over trillions of tokens of text with a single objective: given everything so far, predict what comes next. The objective is trivial; doing it well is not. To predict the next token in a proof you need arithmetic, in a stack trace you need to know the language, in a dialogue you need to model what a person would plausibly say. Capability arrives as a side effect of compression. And because the label is just the next token already present in the text, no human annotation is required — which is what allows the data to be this large.</p>
+      <p><strong>Instruction tuning</strong> then fine-tunes on a much smaller, curated set of prompt-and-response pairs. A pretrained model will happily continue your question with three more questions, because that is what a document containing questions tends to do. This stage teaches the format of being an assistant.</p>
+      <p><strong>Preference tuning</strong> is the last shaping step. Humans — or models trained to imitate them — rank candidate responses, and that ranking signal is used to tune the model, either through reinforcement learning against a learned reward model (RLHF) or directly (DPO). This is where an assistant learns to be helpful rather than merely plausible, to refuse sensibly, and to say it does not know.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 182" class="diagram diagram-wide" role="img" aria-labelledby="m7-title">
+            <title id="m7-title">Three training stages in sequence — pretraining, instruction tuning and preference tuning — with bars underneath showing that each stage uses dramatically less data than the one before</title>
+            <rect x="20" y="26" width="180" height="86" rx="6" class="box"/>
+            <text x="110" y="54" class="box-label">Pretraining</text>
+            <text x="110" y="74" class="box-sublabel">trillions of tokens</text>
+            <text x="110" y="90" class="box-sublabel">predict the next token</text>
+
+            <line x1="200" y1="69" x2="218" y2="69" class="arrow"/>
+            <polygon points="218,63 230,69 218,75" class="arrow-head"/>
+
+            <rect x="230" y="26" width="180" height="86" rx="6" class="box"/>
+            <text x="320" y="54" class="box-label">Instruction tuning</text>
+            <text x="320" y="74" class="box-sublabel">curated prompt + response</text>
+            <text x="320" y="90" class="box-sublabel">learns to answer, not continue</text>
+
+            <line x1="410" y1="69" x2="428" y2="69" class="arrow"/>
+            <polygon points="428,63 440,69 428,75" class="arrow-head"/>
+
+            <rect x="440" y="26" width="180" height="86" rx="6" class="box box-accent"/>
+            <text x="530" y="54" class="box-label-inverse">Preference tuning</text>
+            <text x="530" y="74" class="box-sublabel-inverse">people rank the answers</text>
+            <text x="530" y="90" class="box-sublabel-inverse">RLHF · DPO</text>
+
+            <text x="20" y="136" class="band-label">Relative data volume</text>
+            <rect x="20" y="144" width="180" height="10" rx="2" class="bar-lead"/>
+            <rect x="230" y="144" width="44" height="10" rx="2" class="bar"/>
+            <rect x="440" y="144" width="22" height="10" rx="2" class="bar"/>
+            <text x="20" y="172" class="note">~10¹³ tokens</text>
+            <text x="230" y="172" class="note">~10⁴–10⁵ examples</text>
+            <text x="440" y="172" class="note">~10⁵ comparisons</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">The bars are not to scale — they could not be. Essentially all of a model's knowledge comes from the first stage; essentially all of its manner comes from the last two, on a rounding error's worth of data by comparison.</figcaption>
+      </figure>
+
+      <p>At <strong>inference</strong> time the model runs autoregressively: it produces a probability distribution over the whole vocabulary, one token is chosen from it, that token is appended to the input, and the process repeats. <strong>Temperature</strong> and <strong>top-p</strong> control how the choice is made — at temperature zero the most likely token always wins and output is near-deterministic; higher values flatten the distribution and admit more variety. There is no separate "planning" phase. The text is produced one token at a time, left to right, and the model's only means of working something out before answering is to write tokens that do that work — which is precisely what reasoning models are trained to do at length before committing to a reply.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 222" class="diagram diagram-wide" role="img" aria-labelledby="m8-title">
+            <title id="m8-title">Autoregressive decoding: the context goes into the model, which outputs a probability for each candidate next token, one is chosen and appended to the context, and the loop repeats</title>
+            <rect x="14" y="34" width="200" height="52" rx="6" class="box"/>
+            <text x="114" y="54" class="box-label">Context so far</text>
+            <text x="114" y="72" class="box-sublabel">“The cat sat on the”</text>
+            <line x1="214" y1="60" x2="232" y2="60" class="arrow"/>
+            <polygon points="232,54 244,60 232,66" class="arrow-head"/>
+
+            <rect x="244" y="34" width="120" height="52" rx="6" class="box box-accent"/>
+            <text x="304" y="60" class="box-label-inverse">The model</text>
+            <line x1="364" y1="60" x2="382" y2="60" class="arrow"/>
+            <polygon points="382,54 394,60 382,66" class="arrow-head"/>
+
+            <text x="406" y="24" class="note">P(next token)</text>
+            <text x="452" y="47" class="tick tick-end">mat</text>
+            <rect x="458" y="40" width="71" height="13" rx="2" class="bar-lead"/>
+            <text x="535" y="47" class="tick">0.42</text>
+            <text x="452" y="69" class="tick tick-end">floor</text>
+            <rect x="458" y="62" width="30" height="13" rx="2" class="bar"/>
+            <text x="494" y="69" class="tick">0.18</text>
+            <text x="452" y="91" class="tick tick-end">rug</text>
+            <rect x="458" y="84" width="19" height="13" rx="2" class="bar"/>
+            <text x="483" y="91" class="tick">0.11</text>
+            <text x="452" y="113" class="tick tick-end">sofa</text>
+            <rect x="458" y="106" width="10" height="13" rx="2" class="bar"/>
+            <text x="474" y="113" class="tick">0.06</text>
+
+            <path d="M470 128 V162 H436" class="arrow-accent"/>
+            <polygon points="436,156 424,162 436,168" class="arrow-head-accent"/>
+
+            <rect x="244" y="142" width="180" height="40" rx="6" class="box"/>
+            <text x="334" y="162" class="box-label">append the chosen token</text>
+
+            <path d="M244 162 H114 V98" class="arrow-accent"/>
+            <polygon points="108,98 114,86 120,98" class="arrow-head-accent"/>
+
+            <text x="334" y="208" class="note note-mid note-accent">repeat until a stop token, or the length limit</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">One trip round this loop produces one token. Everything a model appears to "know" during a conversation is either baked into its weights or sitting in the context box on the left — there is no third place.</figcaption>
+      </figure>
+
+      <p>That context box has a hard limit: the <strong>context window</strong>, measured in tokens and covering the prompt plus everything generated so far. Modern windows are large — hundreds of thousands of tokens — but they are not memory. Nothing persists between separate calls unless a system explicitly puts it back in. Every product feature that feels like memory is a system re-assembling context behind the scenes.</p>
+      <p>Two more things worth internalising. Performance improves with parameters, data and compute in a relationship regular enough to be called <strong>scaling laws</strong>, which is why the field has been able to plan capability increases rather than stumble on them. And a second axis has opened up: spending more compute at inference time, letting a model reason at length before answering, buys accuracy on hard problems without changing the weights at all.</p>
+    </section>
+
+    <section id="agents" class="section">
+      <h2>AI Agents</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>An agent is a loop. The model chooses an action, something else executes it, the result comes back as new context, and it goes round again until the goal is met.</p>
+      </div>
+
+      <p>A chatbot is one call: text in, text out. An agent puts that call inside a loop and gives it hands. The difference in capability is large, and so is the difference in what can go wrong.</p>
+      <p>The parts are always roughly the same:</p>
+      <ul>
+        <li><strong>A goal</strong> — what the user actually wants, which the agent has to keep referring back to as the context fills up with intermediate work.</li>
+        <li><strong>The model as a policy</strong> — at each step it reads the goal and the history and decides what to do next.</li>
+        <li><strong>Tools</strong> — functions the model can call, each described by a schema of name, purpose and parameters. Search, code execution, file reads and writes, database queries, HTTP requests.</li>
+        <li><strong>An executor</strong> — the runtime that actually performs the call and hands the result back as an observation. The model never touches anything itself; it emits a structured request and something else decides whether to honour it.</li>
+        <li><strong>Memory</strong> — short-term is simply the context window; long-term is whatever the system writes down and retrieves later, such as files or a vector index.</li>
+        <li><strong>A stopping condition</strong> — a step budget, a token budget, or a check that the goal is done. Without one, a confused agent will keep going.</li>
+      </ul>
+      <p>The loop itself — reason about the state, take an action, observe the result, repeat — was popularised as <strong>ReAct</strong>, and interleaving reasoning with acting matters: a model that plans and acts in the same breath can correct itself when an observation contradicts what it expected.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 328" class="diagram diagram-wide" role="img" aria-labelledby="m9-title">
+            <title id="m9-title">An agent loop: a user goal enters the model, which calls a tool, receives an observation, consults memory, and repeats until it produces an answer or completed action</title>
+            <rect x="14" y="18" width="180" height="44" rx="6" class="box"/>
+            <text x="104" y="40" class="box-label">Goal from the user</text>
+            <path d="M104 62 V132 H188" class="arrow"/>
+            <polygon points="188,126 200,132 188,138" class="arrow-head"/>
+
+            <rect x="200" y="96" width="240" height="76" rx="6" class="box box-accent"/>
+            <text x="320" y="124" class="box-label-inverse">The model decides</text>
+            <text x="320" y="146" class="box-sublabel-inverse">reasons over the goal and everything so far</text>
+
+            <text x="460" y="106" class="note note-mid note-accent">act</text>
+            <line x1="440" y1="116" x2="468" y2="116" class="arrow-accent"/>
+            <polygon points="468,110 480,116 468,122" class="arrow-head-accent"/>
+            <line x1="480" y1="158" x2="452" y2="158" class="arrow-accent"/>
+            <polygon points="452,152 440,158 452,164" class="arrow-head-accent"/>
+            <text x="452" y="178" class="note note-mid note-accent">observe</text>
+
+            <rect x="480" y="76" width="150" height="124" rx="6" class="group-frame"/>
+            <text x="492" y="98" class="group-label">Tools</text>
+            <text x="492" y="122" class="note">search the web</text>
+            <text x="492" y="140" class="note">run code</text>
+            <text x="492" y="158" class="note">read / write files</text>
+            <text x="492" y="176" class="note">call an API</text>
+
+            <rect x="14" y="232" width="180" height="56" rx="6" class="box"/>
+            <text x="104" y="254" class="box-label">Memory</text>
+            <text x="104" y="272" class="box-sublabel">notes, files, earlier steps</text>
+            <path d="M194 260 H250 V184" class="arrow"/>
+            <polygon points="244,184 250,172 256,184" class="arrow-head"/>
+
+            <line x1="390" y1="172" x2="390" y2="226" class="arrow"/>
+            <polygon points="384,226 390,238 396,226" class="arrow-head"/>
+            <rect x="290" y="238" width="250" height="44" rx="6" class="box"/>
+            <text x="415" y="260" class="box-label">Answer, or a completed action</text>
+
+            <text x="320" y="312" class="note note-mid">the loop repeats until the goal is met — or a step budget stops it</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">Two arrows do all the work: "act" carries a structured tool call out, "observe" carries the result back in as more context. Everything else — planning, sub-agents, retries — is a variation on how many times that pair goes round and what gets kept between passes.</figcaption>
+      </figure>
+
+      <p>Longer tasks add two more patterns. <strong>Planning</strong> breaks a goal into subtasks up front and re-plans when reality disagrees. <strong>Sub-agents</strong> hand a scoped piece of work to a fresh context and return only the conclusion, which keeps the main context from filling with intermediate noise — the same reason you would not paste an entire build log into a design discussion.</p>
+      <p>The failure modes are specific enough to design against. Agents loop without terminating; small errors compound over many steps because each observation is generated from a slightly wrong state; and untrusted tool output can carry <strong>prompt injection</strong>, where text fetched from a web page is treated as instructions rather than data. The mitigations are unglamorous and effective: hard step and token budgets, least-privilege tool scopes, sandboxes for code execution, human approval before anything irreversible, and a separate verification step rather than trusting the agent's own report that it succeeded.</p>
+    </section>
+
+    <section id="rag" class="section">
+      <h2>Retrieval-Augmented Generation</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Don't hope the answer is in the weights. Go and find the relevant text first, and put it in the context.</p>
+      </div>
+
+      <p>A model's knowledge is frozen at training time, blurry in the details, and contains nothing about your private documents. Retraining to fix that is expensive and does not suit facts that change weekly. Retrieval-augmented generation takes the other route: look the answer up, then ask the model to write using what was found.</p>
+      <p>It runs in two phases. <strong>Indexing</strong> happens once: documents are split into chunks, each chunk is embedded into a vector, and the vectors are stored alongside their text in an index. <strong>Answering</strong> happens per question: the question is embedded with the same model, the nearest chunks are retrieved by vector similarity, and those chunks are pasted into the prompt above the question.</p>
+
+      <figure class="figure">
+        <div class="figure-scroll" tabindex="0">
+          <svg viewBox="0 0 640 320" class="diagram diagram-wide" role="img" aria-labelledby="m10-title">
+            <title id="m10-title">Retrieval-augmented generation in two phases: documents are chunked, embedded and stored in a vector index; then a question is embedded, matched against that index, and the best-matching chunks are placed in the prompt before the model answers</title>
+            <text x="10" y="14" class="band-label">Indexing — done once</text>
+
+            <rect x="10" y="24" width="120" height="40" rx="6" class="box"/>
+            <text x="70" y="44" class="box-label">Documents</text>
+            <text x="150" y="78" class="note note-mid">split</text>
+            <line x1="130" y1="44" x2="158" y2="44" class="arrow"/>
+            <polygon points="158,38 170,44 158,50" class="arrow-head"/>
+
+            <rect x="170" y="24" width="120" height="40" rx="6" class="box"/>
+            <text x="230" y="44" class="box-label">Chunks</text>
+            <text x="310" y="78" class="note note-mid">embed</text>
+            <line x1="290" y1="44" x2="318" y2="44" class="arrow"/>
+            <polygon points="318,38 330,44 318,50" class="arrow-head"/>
+
+            <rect x="330" y="24" width="120" height="40" rx="6" class="box"/>
+            <text x="390" y="44" class="box-label">Vectors</text>
+            <text x="470" y="78" class="note note-mid">store</text>
+            <line x1="450" y1="44" x2="478" y2="44" class="arrow"/>
+            <polygon points="478,38 490,44 478,50" class="arrow-head"/>
+
+            <rect x="490" y="24" width="140" height="40" rx="6" class="box box-accent"/>
+            <text x="560" y="44" class="box-label-inverse">Vector index</text>
+
+            <line x1="10" y1="86" x2="630" y2="86" class="group-frame"/>
+            <text x="10" y="108" class="band-label">Answering — every question</text>
+
+            <rect x="10" y="118" width="120" height="40" rx="6" class="box"/>
+            <text x="70" y="138" class="box-label">Question</text>
+            <line x1="130" y1="138" x2="148" y2="138" class="arrow"/>
+            <polygon points="148,132 160,138 148,144" class="arrow-head"/>
+
+            <rect x="160" y="118" width="130" height="40" rx="6" class="box"/>
+            <text x="225" y="138" class="box-label">Embed the query</text>
+            <text x="390" y="130" class="note note-mid">nearest neighbours by cosine similarity</text>
+            <line x1="290" y1="138" x2="478" y2="138" class="arrow"/>
+            <polygon points="478,132 490,138 478,144" class="arrow-head"/>
+
+            <line x1="560" y1="64" x2="560" y2="106" class="arrow" stroke-dasharray="4 4"/>
+            <polygon points="554,106 560,118 566,106" class="arrow-head"/>
+
+            <rect x="490" y="118" width="140" height="40" rx="6" class="box"/>
+            <text x="560" y="138" class="box-label">Top matches</text>
+
+            <path d="M560 158 V219 H532" class="arrow"/>
+            <polygon points="532,213 520,219 532,225" class="arrow-head"/>
+
+            <rect x="120" y="196" width="400" height="46" rx="6" class="box"/>
+            <text x="320" y="214" class="box-label">Prompt = instructions + the question</text>
+            <text x="320" y="232" class="box-sublabel">+ the retrieved chunks, verbatim</text>
+            <line x1="320" y1="242" x2="320" y2="252" class="arrow"/>
+            <polygon points="314,252 320,264 326,252" class="arrow-head"/>
+
+            <rect x="170" y="264" width="300" height="46" rx="6" class="box box-accent"/>
+            <text x="320" y="281" class="box-label-inverse">Grounded answer</text>
+            <text x="320" y="299" class="box-sublabel-inverse">with citations back to the source chunks</text>
+          </svg>
+        </div>
+        <figcaption class="figure-caption">The dashed line is the only thing connecting the two phases. Everything above it can run overnight; everything below it has to run in the time a user is willing to wait, which is why retrieval quality and latency are usually in tension.</figcaption>
+      </figure>
+
+      <p>Whether a RAG system works comes down to unglamorous details. Chunking has to respect structure — splitting mid-sentence or mid-table destroys the meaning you are trying to retrieve. Pure vector search misses exact identifiers, part numbers and rare terms, so production systems usually combine it with keyword search and then re-rank the combined results with a slower, more accurate model. And the index goes stale silently: nothing about a wrong answer tells you the source document changed last month.</p>
+      <p>The failure to watch for is a model that is handed the right context and ignores it, answering from its weights instead. That is why asking for citations is worth the tokens: it makes the difference between a grounded answer and a fluent guess visible. Evaluate the two halves separately — did retrieval surface the right chunk, and did the model use it — because fixing the wrong half is the most common way these projects stall.</p>
+      <p>In an agent, retrieval stops being a fixed pipeline and becomes just another tool: the model decides <em>when</em> to search, what to search for, and whether the results were good enough to search again.</p>
+    </section>
+
+    <section id="limits" class="section">
+      <h2>Where These Systems Break</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Every limitation below follows from the architecture, not from the model being insufficiently trained. Knowing which is which tells you what to build around.</p>
+      </div>
+
+      <p>A model that predicts plausible next tokens will produce plausible text whether or not it has grounds for it. That is not a bug that gets patched; it is what the objective asks for, and it is why the engineering around a model matters as much as the model.</p>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Failure</th>
+              <th scope="col">Why it happens</th>
+              <th scope="col">What actually helps</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hallucination</td>
+              <td>The objective rewards plausible continuations, not true ones. There is no internal fact store to consult.</td>
+              <td>Retrieval with citations; asking for sources; letting the model verify with a tool instead of recalling.</td>
+            </tr>
+            <tr>
+              <td>Losing the middle</td>
+              <td>Attention spreads thin over a long context, and material buried in the middle gets less weight than either end.</td>
+              <td>Put the important material at the start or end; retrieve less and better; break work into scoped sub-tasks.</td>
+            </tr>
+            <tr>
+              <td>Prompt injection</td>
+              <td>Instructions and data arrive as the same stream of tokens, so text from a web page can read as a command.</td>
+              <td>Treat all tool output as untrusted; least-privilege tool scopes; confirmation before irreversible actions.</td>
+            </tr>
+            <tr>
+              <td>Non-determinism</td>
+              <td>Sampling is stochastic, and even at temperature zero, batching and hardware make outputs vary slightly.</td>
+              <td>Test against a fixed evaluation set rather than a single example; assert on structure, not exact strings.</td>
+            </tr>
+            <tr>
+              <td>Compounding error</td>
+              <td>In an agent loop, each step conditions on the last, so a small early mistake is built upon rather than corrected.</td>
+              <td>Step budgets; independent verification of the result; checkpoints a human can inspect.</td>
+            </tr>
+            <tr>
+              <td>Stale knowledge</td>
+              <td>Weights are frozen at the training cut-off and know nothing published since.</td>
+              <td>Retrieval or a search tool; stating the cut-off; never using the weights for anything time-sensitive.</td>
+            </tr>
+            <tr>
+              <td>Inherited bias</td>
+              <td>Training data reflects the world as written, including its skews, and the model reproduces them fluently.</td>
+              <td>Evaluate across affected groups specifically; measure outcomes rather than trusting intent.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Which leaves evaluation, the part most projects skip and then regret. The discipline from Part I transfers directly: a held-out set of real cases with known good outcomes, scored the same way every time, so a change can be shown to be an improvement rather than assumed to be one. Vibes do not survive contact with the fiftieth prompt tweak.</p>
+      <p>What changes is that outputs are open-ended, so scoring is harder. Anchor on whatever is checkable — did the code run, was the cited passage actually in the source, does the JSON parse, is the number right. Use a model as a judge for the rest if you must, but calibrate it against human ratings first, because an unchecked judge just moves the trust problem somewhere less visible.</p>
+      <p>None of this is a reason for pessimism about the technology. It is the ordinary situation of building on a component with known characteristics: the failures listed above are predictable, which means they are designable-around, which is most of what the work consists of.</p>
+    </section>
+
+    <nav class="pager" aria-label="Chapter navigation">
+      <a class="pager-link" href="fundamentals.html#common-algorithms">
+        <span class="pager-dir">Previous — Part I</span>
+        <span class="pager-title">Foundations</span>
+      </a>
+      <a class="pager-link pager-next" href="index.html#chapters">
+        <span class="pager-dir">Index</span>
+        <span class="pager-title">All chapters</span>
+      </a>
+    </nav>
+  </main>
+
+  <hr class="hr hr-flush">
+
+  <footer class="site-footer">
+    <span>Machine Learning Fundamentals</span>
+    <span><a href="index.html">Back to the chapter index</a></span>
+  </footer>
+</div>
+</body>
+</html>
