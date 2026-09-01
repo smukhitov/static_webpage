@@ -11,11 +11,12 @@ const CHAPTERS = [
 ];
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/landing.html');
+  await page.goto('/');
 });
 
-test('has the expected page title', async ({ page }) => {
-  await expect(page).toHaveTitle('Machine Learning Fundamentals — Start Here');
+test('the landing page is served at the site root', async ({ page }) => {
+  await expect(page).toHaveTitle('Machine Learning Fundamentals');
+  await expect(page.locator('h1')).toHaveText(/Machine learning,\s*explained from the beginning\./);
 });
 
 test('lists all five chapters in order', async ({ page }) => {
@@ -27,9 +28,9 @@ test('every chapter links to a section that exists on the article page', async (
   const hrefs = await page.locator('.chapter').evaluateAll((links) =>
     links.map((a) => a.getAttribute('href'))
   );
-  expect(hrefs).toEqual(CHAPTERS.map((c) => `index.html#${c.target}`));
+  expect(hrefs).toEqual(CHAPTERS.map((c) => `fundamentals.html#${c.target}`));
 
-  await page.goto('/index.html');
+  await page.goto('/fundamentals.html');
   for (const { target } of CHAPTERS) {
     await expect(page.locator(`#${target}`)).toHaveCount(1);
   }
@@ -37,7 +38,7 @@ test('every chapter links to a section that exists on the article page', async (
 
 test('the primary call to action opens the article', async ({ page }) => {
   await page.locator('.nav-cta').click();
-  await expect(page).toHaveURL(/\/index\.html#what-is-ml$/);
+  await expect(page).toHaveURL(/\/fundamentals\.html#what-is-ml$/);
   await expect(page.locator('#what-is-ml')).toBeVisible();
 });
 
@@ -49,11 +50,12 @@ test('chapters are revealed once scrolled into view', async ({ page }) => {
 });
 
 test('has no detectable WCAG 2 A/AA accessibility violations', async ({ page }) => {
-  // Reveal every row first: axe cannot judge contrast on a fully transparent
-  // element, and would report those as incomplete rather than checking them.
-  await page.evaluate(() => {
-    document.querySelectorAll('[data-reveal]').forEach((n) => n.classList.add('is-revealed'));
-  });
+  // Under reduced motion the reveal never engages, so every row is opaque from
+  // the start. Toggling it on instead would leave axe measuring rows mid-fade,
+  // where the blended colours fail contrast for as long as the transition runs.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  await expect(page.locator('html')).not.toHaveClass(/js-reveal/);
 
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa'])

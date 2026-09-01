@@ -1,0 +1,220 @@
+/* ==========================================================================
+   Article page. Tokens, chrome and component classes come from
+   design-system.css, which must be linked first.
+   ========================================================================== */
+
+/* The prose column is narrower than the site container — long-form text reads
+   badly at 1040px — but stays left-aligned with it. */
+.article { max-width: 68ch; padding: 88px 0 0; }
+
+.article-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(40px, 5.2vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0 0 0 -0.042em;
+}
+
+.article-lede {
+  font-size: 17px;
+  line-height: 28px;
+  margin: 24px 0 0;
+  color: var(--color-ink-82);
+}
+
+/* — contents — */
+.toc {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.toc-label {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-70);
+}
+
+.toc ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.toc a {
+  font-size: 14px;
+  color: var(--color-accent-700);
+  text-decoration: none;
+}
+
+.toc a:hover { color: var(--color-accent-800); text-decoration: underline; }
+
+/* — sections — */
+.section {
+  padding-top: 56px;
+  /* Anchor links land below the section heading without a sticky nav to
+     account for; the padding gives the target some breathing room. */
+  scroll-margin-top: 24px;
+}
+
+.section + .section { border-top: 1px solid var(--color-divider); }
+
+.section h2 {
+  font-size: clamp(28px, 3.4vw, 36px);
+  line-height: 1.15;
+  margin: 0 0 20px;
+}
+
+.article p {
+  font-size: 17px;
+  line-height: 30px;
+  margin: 0 0 20px;
+  color: var(--color-ink-82);
+}
+
+.article strong { font-weight: 600; color: var(--color-text); }
+
+.article ul {
+  padding-left: 20px;
+  margin: 0 0 20px;
+}
+
+.article li {
+  font-size: 17px;
+  line-height: 30px;
+  margin-bottom: 12px;
+  color: var(--color-ink-82);
+}
+
+.article li::marker { color: var(--color-accent-600); }
+
+/* ==========================================================================
+   Diagrams — the same figure language as the landing page's chapter marks:
+   line work in muted ink, gold reserved for the element under discussion.
+   ========================================================================== */
+
+.diagram {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  display: block;
+  margin: 32px 0 36px;
+}
+
+.box {
+  fill: var(--color-surface);
+  stroke: var(--color-ink-55);
+  stroke-width: 1.5;
+}
+
+.box-accent {
+  fill: var(--color-accent-700);
+  stroke: var(--color-accent-700);
+  stroke-width: 1.5;
+}
+
+.box-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-anchor: middle;
+  fill: var(--color-text);
+  dominant-baseline: middle;
+}
+
+.box-label-inverse {
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-anchor: middle;
+  fill: var(--color-bg);
+  dominant-baseline: middle;
+}
+
+.box-sublabel {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-anchor: middle;
+  fill: var(--color-ink-78);
+  dominant-baseline: middle;
+}
+
+/* Subordinate to .box-label-inverse, but still 4.9:1 on the accent fill. */
+.box-sublabel-inverse {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-anchor: middle;
+  fill: color-mix(in srgb, var(--color-accent-100) 85%, transparent);
+  dominant-baseline: middle;
+}
+
+.arrow {
+  stroke: var(--color-ink-55);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.arrow-head { fill: var(--color-ink-55); }
+
+.axis {
+  stroke: var(--color-ink-55);
+  stroke-width: 1;
+}
+
+.axis-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--color-ink-70);
+  text-anchor: middle;
+}
+
+.line-train {
+  fill: none;
+  stroke: var(--color-ink-70);
+  stroke-width: 2;
+}
+
+.line-test {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+
+.legend-train {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--color-ink-70);
+  text-anchor: end;
+}
+
+.legend-test {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--color-accent-700);
+  text-anchor: end;
+}
+
+.node {
+  fill: var(--color-surface);
+  stroke: var(--color-ink-55);
+  stroke-width: 1.5;
+}
+
+.node-accent {
+  fill: var(--color-accent-100);
+  stroke: var(--color-accent);
+}
+
+.leaf { fill: var(--color-accent-700); }
+
+/* — narrow screens — */
+@media (max-width: 760px) {
+  .article { padding-top: 56px; }
+  .section { padding-top: 40px; }
+  .article p, .article li { font-size: 16px; line-height: 28px; }
+}

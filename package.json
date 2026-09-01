@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "ML fundamentals static page and its deployment lifecycle",
   "scripts": {
-    "test:html": "html-validate index.html landing.html",
+    "test:html": "html-validate index.html fundamentals.html",
     "test:a11y": "playwright test",
     "test": "npm run test:html && npm run test:a11y"
   },
