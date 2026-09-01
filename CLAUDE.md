@@ -1,3 +1,4 @@
+## General instructions
 - folder to use in Obsidian: 'static-webpage'
 - create feature branch for each new feature, commit changes with meaningful messages, and create a pull request for review before merging into the main branch.
 
