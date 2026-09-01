@@ -1,0 +1,109 @@
+/* ==========================================================================
+   Landing page. Tokens, chrome and component classes come from
+   design-system.css, which must be linked first.
+   ========================================================================== */
+
+/* — hero — */
+.hero { padding: 112px 0 84px; }
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(44px, 6.2vw, 84px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  /* Optical alignment: pulls the first glyph flush with the column edge. */
+  margin: 0 0 0 -0.042em;
+}
+
+.hero-title span { display: block; }
+
+.hero-lede {
+  font-size: 17px;
+  line-height: 28px;
+  max-width: 54ch;
+  margin: 40px 0 0;
+  color: var(--color-ink-82);
+}
+
+/* — chapter list — */
+.chapters { padding: 56px 0 0; }
+
+.chapter {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 168px;
+  gap: 32px;
+  align-items: center;
+  padding: 32px 16px 32px 0;
+  border-bottom: 1px solid var(--color-divider);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: background 200ms ease;
+}
+
+.chapter:hover { background: color-mix(in srgb, var(--color-accent) 7%, transparent); }
+
+.chapter-num {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-feature-settings: 'tnum' 1;
+  color: var(--color-accent-700);
+  align-self: start;
+}
+
+.chapter-title {
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+
+.chapter-summary {
+  font-size: 15.5px;
+  line-height: 28px;
+  margin: 8px 0 0;
+  max-width: 46ch;
+  color: var(--color-ink-78);
+}
+
+.chapter-note {
+  font-size: 13px;
+  line-height: 22px;
+  margin: 10px 0 0;
+  color: var(--color-accent-700);
+}
+
+.chapter-figure {
+  justify-self: end;
+  color: var(--color-ink-55);
+}
+
+/* `var()` is not resolved inside SVG presentation attributes, so the accented
+   strokes and fills are set here rather than on the elements. */
+.chapter-figure .accent-stroke { stroke: var(--color-accent); }
+.chapter-figure .accent-fill { fill: color-mix(in srgb, var(--color-accent) 14%, transparent); }
+
+/* — reveal on scroll —
+   `js-reveal` is set on <html> by landing.js before first paint, and only when
+   the browser supports IntersectionObserver and motion is not reduced. Without
+   it every chapter renders visible, so the page degrades cleanly. */
+.js-reveal .chapter[data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 600ms ease, transform 600ms cubic-bezier(0.2, 0.7, 0.3, 1), background 200ms ease;
+}
+
+.js-reveal .chapter[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* — narrow screens — */
+@media (max-width: 760px) {
+  .chapter { grid-template-columns: 40px minmax(0, 1fr); gap: 20px; }
+  .chapter-figure { display: none; }
+  .chapter-title { font-size: 26px; line-height: 32px; }
+  .hero { padding: 72px 0 56px; }
+  .hero-lede { margin-top: 28px; }
+  .chapters { padding-top: 32px; }
+}

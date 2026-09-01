@@ -4,128 +4,116 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Machine Learning Fundamentals</title>
-<link rel="stylesheet" href="style.css">
+<meta name="description" content="Five short chapters on the ideas underneath machine learning: what a model is, how it learns from examples, and why one that looks perfect can still be wrong.">
+<link rel="stylesheet" href="design-system.css">
+<link rel="stylesheet" href="landing.css">
+<script src="landing.js"></script>
 </head>
 <body>
-<header>
-  <h1>Machine Learning Fundamentals</h1>
-  <p>A short introduction to the ideas behind machine learning.</p>
-  <nav aria-label="Section navigation">
-    <ul>
-      <li><a href="#what-is-ml">What Is ML?</a></li>
-      <li><a href="#learning-types">Learning Types</a></li>
-      <li><a href="#train-test-split">Train/Test Split</a></li>
-      <li><a href="#overfitting">Overfitting</a></li>
-      <li><a href="#common-algorithms">Common Algorithms</a></li>
-    </ul>
-  </nav>
-</header>
+<nav class="nav site-nav" aria-label="Primary">
+  <span class="nav-brand">Machine Learning Fundamentals</span>
+  <a href="#chapters">Chapters</a>
+  <a class="btn btn-primary nav-cta" href="fundamentals.html#what-is-ml">Start reading</a>
+</nav>
 
-<main>
-  <section id="what-is-ml">
-    <h2>What Is Machine Learning?</h2>
-    <p>Machine learning is a way of building software that improves at a task by learning from data, rather than following rules a programmer wrote by hand. Instead of coding "if X then Y" for every case, you show the program many examples and let it find the pattern connecting the input to the output.</p>
-    <p>The result is a model: a function, fitted to data, that can make a prediction or decision on new examples it hasn't seen before.</p>
-    <svg viewBox="0 0 460 100" class="diagram" role="img" aria-labelledby="d1-title">
-      <title id="d1-title">Data flows into a model, which produces a prediction</title>
-      <rect x="10" y="30" width="120" height="40" rx="6" class="box"/>
-      <text x="70" y="55" class="box-label">Data</text>
-      <line x1="130" y1="50" x2="180" y2="50" class="arrow"/>
-      <polygon points="180,44 195,50 180,56" class="arrow-head"/>
-      <rect x="195" y="30" width="120" height="40" rx="6" class="box box-accent"/>
-      <text x="255" y="55" class="box-label">Model</text>
-      <line x1="315" y1="50" x2="365" y2="50" class="arrow"/>
-      <polygon points="365,44 380,50 365,56" class="arrow-head"/>
-      <rect x="330" y="30" width="120" height="40" rx="6" class="box"/>
-      <text x="390" y="55" class="box-label">Prediction</text>
-    </svg>
-  </section>
+<div class="container">
+  <main>
+    <section class="hero">
+      <h1 class="hero-title">
+        <span>Machine learning,</span>
+        <span>explained from the beginning.</span>
+      </h1>
+      <p class="hero-lede">Five short chapters on the ideas underneath machine learning: what a model actually is, how it learns from examples, and why one that looks perfect can still be wrong.</p>
+    </section>
 
-  <section id="learning-types">
-    <h2>Supervised, Unsupervised, and Reinforcement Learning</h2>
-    <p><strong>Supervised learning</strong> trains on labeled examples — each input comes with the correct answer attached, such as an email marked "spam" or "not spam." The model learns to map inputs to those known outputs.</p>
-    <p><strong>Unsupervised learning</strong> works on unlabeled data. There's no correct answer given; instead, the model finds structure on its own, such as grouping similar customers together (clustering) or identifying which features matter most.</p>
-    <p><strong>Reinforcement learning</strong> learns by trial and error inside an environment, receiving rewards or penalties for its actions. Rather than learning from a fixed dataset, it learns a strategy by acting, observing the outcome, and adjusting — the approach behind game-playing agents and robotics control.</p>
-    <svg viewBox="0 0 460 130" class="diagram" role="img" aria-labelledby="d2-title">
-      <title id="d2-title">Three learning types: supervised uses labeled data, unsupervised finds structure in unlabeled data, reinforcement learns from reward and penalty in a loop</title>
-      <rect x="10" y="10" width="130" height="50" rx="6" class="box"/>
-      <text x="75" y="32" class="box-label">Labeled data</text>
-      <text x="75" y="48" class="box-sublabel">Supervised</text>
-      <rect x="165" y="10" width="130" height="50" rx="6" class="box"/>
-      <text x="230" y="32" class="box-label">Unlabeled data</text>
-      <text x="230" y="48" class="box-sublabel">Unsupervised</text>
-      <rect x="320" y="10" width="130" height="50" rx="6" class="box box-accent"/>
-      <text x="385" y="32" class="box-label">Agent + Env</text>
-      <text x="385" y="48" class="box-sublabel">Reinforcement</text>
-      <line x1="320" y1="90" x2="450" y2="90" class="arrow"/>
-      <line x1="450" y1="90" x2="450" y2="110" class="arrow"/>
-      <line x1="450" y1="110" x2="330" y2="110" class="arrow"/>
-      <polygon points="330,104 315,110 330,116" class="arrow-head"/>
-      <text x="385" y="105" class="box-sublabel">reward / penalty loop</text>
-    </svg>
-  </section>
+    <hr class="hr hr-flush">
 
-  <section id="train-test-split">
-    <h2>The Train/Test Split</h2>
-    <p>A model that's only ever evaluated on the data it was trained on will look better than it really is — it can memorize answers instead of learning general patterns. To catch this, the available data is split: most of it (the <strong>training set</strong>) is used to fit the model, and a held-out portion (the <strong>test set</strong>) is used only to measure how well it performs on examples it never saw during training.</p>
-    <p>A common split is 80% training, 20% testing, though the right ratio depends on how much data is available.</p>
-    <svg viewBox="0 0 460 70" class="diagram" role="img" aria-labelledby="d3-title">
-      <title id="d3-title">A bar split into 80 percent training data and 20 percent test data</title>
-      <rect x="10" y="15" width="360" height="40" rx="4" class="box-accent"/>
-      <rect x="370" y="15" width="90" height="40" rx="4" class="box"/>
-      <text x="190" y="40" class="box-label-inverse">Training (80%)</text>
-      <text x="415" y="40" class="box-label">Test (20%)</text>
-    </svg>
-  </section>
+    <section id="chapters" class="chapters" aria-label="Chapters">
 
-  <section id="overfitting">
-    <h2>Overfitting</h2>
-    <p>Overfitting happens when a model learns the training data too well — including its noise and quirks — rather than the general pattern underneath. An overfit model scores extremely well on training data but performs poorly on new, unseen data, because it memorized specifics instead of learning something that generalizes.</p>
-    <p>The train/test split exists specifically to detect this: a big gap between training accuracy and test accuracy is the classic sign of overfitting.</p>
-    <svg viewBox="0 0 460 140" class="diagram" role="img" aria-labelledby="d4-title">
-      <title id="d4-title">Line chart of training error steadily decreasing while test error decreases then rises again as model complexity grows, showing the overfitting gap</title>
-      <line x1="30" y1="10" x2="30" y2="110" class="axis"/>
-      <line x1="30" y1="110" x2="440" y2="110" class="axis"/>
-      <text x="0" y="65" class="axis-label" transform="rotate(-90 12 65)">Error</text>
-      <text x="220" y="130" class="axis-label">Model complexity</text>
-      <polyline points="40,95 120,75 200,55 280,40 360,28 430,20" class="line-train"/>
-      <polyline points="40,100 120,70 200,50 280,45 360,60 430,90" class="line-test"/>
-      <text x="360" y="15" class="legend-train">Training error</text>
-      <text x="300" y="105" class="legend-test">Test error</text>
-    </svg>
-  </section>
+      <a class="chapter" href="fundamentals.html#what-is-ml" data-reveal>
+        <span class="chapter-num">01</span>
+        <div class="chapter-text">
+          <h2 class="chapter-title">What Is Machine Learning?</h2>
+          <p class="chapter-summary">Software that improves at a task by learning from examples, rather than following rules a programmer wrote by hand. The result is a model: a function, fitted to data.</p>
+          <p class="chapter-note">A spam filter learns from mail you already sorted — nobody writes the rule for "looks like spam".</p>
+        </div>
+        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+          <rect x="2" y="20" width="36" height="24" rx="2"></rect>
+          <path d="M42 32 H58"></path><path d="M54 28 L58 32 L54 36"></path>
+          <rect class="accent-stroke" x="62" y="20" width="36" height="24" rx="2"></rect>
+          <path d="M102 32 H118"></path><path d="M114 28 L118 32 L114 36"></path>
+          <rect x="122" y="20" width="36" height="24" rx="2"></rect>
+        </svg>
+      </a>
 
-  <section id="common-algorithms">
-    <h2>Common Algorithms</h2>
-    <p>A few algorithms show up across most introductions to the field:</p>
-    <ul>
-      <li><strong>Linear regression</strong> — predicts a continuous number by fitting a straight-line relationship between inputs and output.</li>
-      <li><strong>Logistic regression</strong> — despite the name, used for classification: predicting one of a fixed set of categories.</li>
-      <li><strong>Decision trees</strong> — make predictions by asking a sequence of yes/no questions about the input, learned from the data.</li>
-      <li><strong>k-means clustering</strong> — an unsupervised method that groups data points into a chosen number of clusters based on similarity.</li>
-      <li><strong>Neural networks</strong> — layers of simple connected units that combine to approximate complex, non-linear relationships between inputs and outputs.</li>
-    </ul>
-    <svg viewBox="0 0 460 130" class="diagram" role="img" aria-labelledby="d5-title">
-      <title id="d5-title">A small decision tree: a root question splitting into two branches, each splitting again into leaf outcomes</title>
-      <circle cx="230" cy="15" r="16" class="node"/>
-      <line x1="230" y1="31" x2="120" y2="60" class="arrow"/>
-      <line x1="230" y1="31" x2="340" y2="60" class="arrow"/>
-      <circle cx="120" cy="70" r="16" class="node"/>
-      <circle cx="340" cy="70" r="16" class="node"/>
-      <line x1="120" y1="86" x2="60" y2="115" class="arrow"/>
-      <line x1="120" y1="86" x2="180" y2="115" class="arrow"/>
-      <line x1="340" y1="86" x2="280" y2="115" class="arrow"/>
-      <line x1="340" y1="86" x2="400" y2="115" class="arrow"/>
-      <rect x="35" y="112" width="50" height="18" rx="4" class="leaf"/>
-      <rect x="155" y="112" width="50" height="18" rx="4" class="leaf"/>
-      <rect x="255" y="112" width="50" height="18" rx="4" class="leaf"/>
-      <rect x="375" y="112" width="50" height="18" rx="4" class="leaf"/>
-    </svg>
-  </section>
-</main>
+      <a class="chapter" href="fundamentals.html#learning-types" data-reveal>
+        <span class="chapter-num">02</span>
+        <div class="chapter-text">
+          <h2 class="chapter-title">Supervised, Unsupervised, Reinforcement</h2>
+          <p class="chapter-summary">Three ways to learn: from labeled answers, from structure found in unlabeled data, or from reward and penalty inside an environment.</p>
+          <p class="chapter-note">Reinforcement learning is how game-playing agents and robot controllers are trained.</p>
+        </div>
+        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+          <rect x="4" y="22" width="7" height="7"></rect><rect x="15" y="22" width="7" height="7"></rect><rect x="26" y="22" width="7" height="7"></rect>
+          <rect x="4" y="33" width="7" height="7"></rect><rect x="15" y="33" width="7" height="7"></rect><rect x="26" y="33" width="7" height="7"></rect>
+          <circle cx="62" cy="26" r="2.5"></circle><circle cx="72" cy="20" r="2.5"></circle><circle cx="68" cy="34" r="2.5"></circle><circle cx="86" cy="40" r="2.5"></circle><circle cx="94" cy="30" r="2.5"></circle><circle cx="82" cy="28" r="2.5"></circle>
+          <ellipse class="accent-stroke" cx="68" cy="27" rx="13" ry="11" stroke-dasharray="3 3"></ellipse>
+          <path d="M134 18 A14 14 0 1 1 122 25"></path><path d="M118 20 L122 25 L127 22"></path>
+        </svg>
+      </a>
 
-<footer>
-  <p>A learning exercise in the end-to-end software development lifecycle.</p>
-</footer>
+      <a class="chapter" href="fundamentals.html#train-test-split" data-reveal>
+        <span class="chapter-num">03</span>
+        <div class="chapter-text">
+          <h2 class="chapter-title">The Train/Test Split</h2>
+          <p class="chapter-summary">Most of the data fits the model; a held-out portion is kept back to measure how it does on examples it never saw during training.</p>
+          <p class="chapter-note">80/20 is the common split, but the right ratio depends on how much data you have.</p>
+        </div>
+        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+          <rect class="accent-stroke" x="2" y="20" width="156" height="24" rx="2"></rect>
+          <rect class="accent-fill" x="2" y="20" width="124.8" height="24" rx="2" stroke="none"></rect>
+          <path class="accent-stroke" d="M126.8 20 V44"></path>
+          <path d="M2 52 H126.8"></path><path d="M130.8 52 H158"></path>
+        </svg>
+      </a>
+
+      <a class="chapter" href="fundamentals.html#overfitting" data-reveal>
+        <span class="chapter-num">04</span>
+        <div class="chapter-text">
+          <h2 class="chapter-title">Overfitting</h2>
+          <p class="chapter-summary">A model can learn the training data too well, noise and quirks included, and then fail on anything new. It memorized specifics instead of the pattern underneath.</p>
+          <p class="chapter-note">The tell: training accuracy keeps climbing while test accuracy turns and drops.</p>
+        </div>
+        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+          <path d="M8 6 V54 H156"></path>
+          <path d="M12 16 C52 40 92 50 152 53"></path>
+          <path class="accent-stroke" d="M12 22 C48 46 78 50 152 12"></path>
+        </svg>
+      </a>
+
+      <a class="chapter" href="fundamentals.html#common-algorithms" data-reveal>
+        <span class="chapter-num">05</span>
+        <div class="chapter-text">
+          <h2 class="chapter-title">Common Algorithms</h2>
+          <p class="chapter-summary">Linear and logistic regression, decision trees, k-means clustering and neural networks — the handful that show up in every introduction, a paragraph each.</p>
+          <p class="chapter-note">Logistic regression, despite the name, is used for classification rather than regression.</p>
+        </div>
+        <svg class="chapter-figure" viewBox="0 0 160 64" width="168" height="67" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true" focusable="false">
+          <path d="M80 14 L50 32 M80 14 L110 32 M50 36 L34 52 M50 36 L66 52 M110 36 L94 52 M110 36 L126 52"></path>
+          <circle class="accent-stroke" cx="80" cy="10" r="5"></circle>
+          <circle cx="50" cy="34" r="5"></circle><circle cx="110" cy="34" r="5"></circle>
+          <rect x="30" y="52" width="8" height="8"></rect><rect x="62" y="52" width="8" height="8"></rect>
+          <rect x="90" y="52" width="8" height="8"></rect><rect x="122" y="52" width="8" height="8"></rect>
+        </svg>
+      </a>
+
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Machine Learning Fundamentals</span>
+    <span>A learning exercise in the end-to-end software development lifecycle.</span>
+  </footer>
+</div>
 </body>
 </html>
