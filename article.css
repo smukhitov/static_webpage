@@ -5,7 +5,38 @@
 
 /* The prose column is narrower than the site container — long-form text reads
    badly at 1040px — but stays left-aligned with it. */
-.article { max-width: 68ch; padding: 88px 0 0; }
+.article { max-width: 68ch; padding: 72px 0 0; }
+
+/* — reading progress —
+   Sits above the sticky nav. `.progress` is inert decoration; article.js only
+   ever writes the inner bar's scaleX, so with JS off it stays at zero width. */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.article-eyebrow {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin: 0 0 14px;
+}
 
 .article-title {
   font-family: var(--font-heading);
@@ -46,7 +77,10 @@
   list-style: none;
   padding: 0;
   margin: 12px 0 0;
+  counter-reset: toc;
 }
+
+.toc li { counter-increment: toc; }
 
 .toc a {
   font-size: 14px;
@@ -54,14 +88,26 @@
   text-decoration: none;
 }
 
+.toc a::before {
+  content: counter(toc, decimal-leading-zero) " ";
+  color: var(--color-ink-70);
+  font-feature-settings: 'tnum' 1;
+}
+
 .toc a:hover { color: var(--color-accent-800); text-decoration: underline; }
+
+/* Set by article.js on the entry for the section currently on screen. */
+.toc a.is-current {
+  color: var(--color-accent-800);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 
 /* — sections — */
 .section {
   padding-top: 56px;
-  /* Anchor links land below the section heading without a sticky nav to
-     account for; the padding gives the target some breathing room. */
-  scroll-margin-top: 24px;
+  /* Clears the sticky nav so an anchored heading is not hidden under it. */
+  scroll-margin-top: calc(var(--nav-height) + 16px);
 }
 
 .section + .section { border-top: 1px solid var(--color-divider); }
@@ -95,10 +141,140 @@
 
 .article li::marker { color: var(--color-accent-600); }
 
+.article code {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 3px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+/* — key idea —
+   One sentence at the head of a section, so a reader skimming the page still
+   picks up the argument without reading the prose under it. */
+.callout {
+  margin: 0 0 28px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.callout-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-accent-800);
+  margin-bottom: 6px;
+}
+
+.article .callout p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 27px;
+}
+
+/* — tables — */
+.table-wrap {
+  overflow-x: auto;
+  margin: 28px 0 32px;
+}
+
+.table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 12px 16px 12px 0;
+  line-height: 25px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.table th {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-ink-70);
+  white-space: nowrap;
+}
+
+.table td { color: var(--color-ink-82); }
+.table td:first-child { color: var(--color-text); font-weight: 600; }
+.table tbody tr:last-child td { border-bottom: 0; }
+
+/* — chapter pager — */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 72px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.pager-link {
+  display: block;
+  padding: 18px 20px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.pager-link:hover {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  color: var(--color-text);
+}
+
+.pager-next { text-align: right; }
+
+.pager-dir {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: 6px;
+}
+
+.pager-title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 21px;
+  line-height: 1.2;
+}
+
 /* ==========================================================================
    Diagrams — the same figure language as the landing page's chapter marks:
    line work in muted ink, gold reserved for the element under discussion.
    ========================================================================== */
+
+.figure { margin: 32px 0 36px; }
+
+.figure-caption {
+  margin: 14px 0 0;
+  padding-left: 14px;
+  border-left: 2px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  font-size: 13.5px;
+  line-height: 24px;
+  color: var(--color-ink-70);
+  max-width: 58ch;
+}
 
 .diagram {
   width: 100%;
@@ -106,6 +282,36 @@
   height: auto;
   display: block;
   margin: 32px 0 36px;
+}
+
+/* Inside a <figure> the caption owns the trailing space. */
+.figure .diagram { margin: 0; }
+
+/* The larger figures are drawn on a 640-unit viewBox so their 13px labels
+   render at 13px. That is wider than the prose column, so they break out to
+   the right into the container's margin.
+   Below the viewport width where that margin runs out, the wrapper — not the
+   page — is what narrows, and the diagram scrolls inside it at full size.
+   Shrinking it to fit instead would take the labels down to about 7px. */
+.figure-scroll {
+  width: 640px;
+  max-width: calc(100vw - 64px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+
+  /* Scroll shadows. The two `local` gradients scroll with the content and mask
+     the two `scroll` ones, so a shadow appears on an edge only while there is
+     more diagram past it — and nothing shows at all when it all fits. */
+  background:
+    linear-gradient(to right, var(--color-bg), transparent 24px) left / 24px 100% no-repeat local,
+    linear-gradient(to left, var(--color-bg), transparent 24px) right / 24px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--color-text) 16%, transparent), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--color-text) 16%, transparent), transparent) right / 12px 100% no-repeat scroll;
+}
+
+.diagram-wide {
+  width: 640px;
+  max-width: none;
 }
 
 .box {
@@ -164,6 +370,8 @@
 .axis {
   stroke: var(--color-ink-55);
   stroke-width: 1;
+  /* Also used for open bracket paths, which would otherwise fill black. */
+  fill: none;
 }
 
 .axis-label {
@@ -212,9 +420,111 @@
 
 .leaf { fill: var(--color-accent-700); }
 
+/* — additional diagram parts —
+   Used by the deep-learning chapters. Same language as above: surface fills,
+   muted ink line work, gold only on whatever the figure is actually about. */
+
+/* Network edges: far more numerous than arrows, so drawn lighter. */
+.edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-text) 28%, transparent);
+  stroke-width: 0.9;
+}
+
+.arrow-accent {
+  stroke: var(--color-accent-700);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.arrow-head-accent { fill: var(--color-accent-700); }
+
+/* Grouping frames: the repeated transformer block, the tool catalogue. */
+.group-frame {
+  fill: none;
+  stroke: var(--color-ink-55);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.group-label {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  fill: var(--color-ink-70);
+}
+
+/* Small annotations hung off a line or a box. */
+.note {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--color-ink-70);
+}
+
+.note-mid { text-anchor: middle; }
+.note-end { text-anchor: end; }
+.note-accent { fill: var(--color-accent-700); }
+
+/* An eyebrow over a band of the figure ("indexing", "answering"). */
+.band-label {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  fill: var(--color-ink-70);
+}
+
+/* Attention grid: fill-opacity is set per cell as a presentation attribute. */
+.cell {
+  fill: var(--color-accent-700);
+  stroke: var(--color-bg);
+  stroke-width: 1;
+}
+
+.cell-masked {
+  fill: var(--color-surface);
+  stroke: var(--color-bg);
+  stroke-width: 1;
+}
+
+.tick {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--color-ink-78);
+  dominant-baseline: middle;
+}
+
+.tick-end { text-anchor: end; }
+.tick-mid { text-anchor: middle; }
+
+/* Bars: token probabilities, relative corpus sizes. */
+.bar { fill: color-mix(in srgb, var(--color-accent) 38%, transparent); }
+.bar-lead { fill: var(--color-accent-700); }
+
+/* The ⊕ that closes a residual connection. */
+.op {
+  fill: var(--color-bg);
+  stroke: var(--color-ink-55);
+  stroke-width: 1.5;
+}
+
+.op-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: var(--color-ink-78);
+}
+
 /* — narrow screens — */
 @media (max-width: 760px) {
-  .article { padding-top: 56px; }
+  .article { padding-top: 48px; }
   .section { padding-top: 40px; }
   .article p, .article li { font-size: 16px; line-height: 28px; }
+  .pager-next { text-align: left; }
+
+  /* The nav gives up sticky here — see design-system.css. */
+  .figure-scroll:focus-visible { outline-offset: 4px; }
 }

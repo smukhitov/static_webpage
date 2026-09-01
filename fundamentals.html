@@ -3,31 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Machine Learning Fundamentals — The Chapters</title>
-<meta name="description" content="A short introduction to the ideas behind machine learning: models, the three kinds of learning, the train/test split, overfitting, and the algorithms you meet first.">
+<title>Machine Learning Fundamentals — Part I: Foundations</title>
+<meta name="description" content="The foundations of machine learning: what a model is, the three kinds of learning, how a model actually learns, the train/test split, overfitting, how to measure a model honestly, and the algorithms you meet first.">
 <link rel="stylesheet" href="design-system.css">
 <link rel="stylesheet" href="article.css">
+<script src="article.js"></script>
 </head>
 <body>
+<div class="progress" aria-hidden="true"><div class="progress-bar"></div></div>
+
 <nav class="nav site-nav" aria-label="Primary">
   <span class="nav-brand"><a href="index.html">Machine Learning Fundamentals</a></span>
-  <a href="#contents">Contents</a>
+  <a href="fundamentals.html" aria-current="page">Foundations</a>
+  <a href="modern-ai.html">Modern AI</a>
   <a class="btn btn-primary nav-cta" href="index.html#chapters">All chapters</a>
 </nav>
 
 <div class="container">
   <main class="article">
     <header>
-      <h1 class="article-title">Machine Learning Fundamentals</h1>
-      <p class="article-lede">A short introduction to the ideas behind machine learning.</p>
+      <p class="article-eyebrow">Part I</p>
+      <h1 class="article-title">Foundations</h1>
+      <p class="article-lede">Everything built later — transformers, language models, agents — rests on a handful of ideas that predate all of them. A model is a function fitted to data; learning is the search for its parameters; and the whole discipline of measuring one honestly exists because a model that looks perfect usually isn't.</p>
 
       <nav id="contents" class="toc" aria-label="Contents">
         <span class="toc-label">Contents</span>
         <ul>
           <li><a href="#what-is-ml">What Is ML?</a></li>
           <li><a href="#learning-types">Learning Types</a></li>
+          <li><a href="#how-models-learn">How Models Learn</a></li>
           <li><a href="#train-test-split">Train/Test Split</a></li>
           <li><a href="#overfitting">Overfitting</a></li>
+          <li><a href="#evaluation">Measuring a Model</a></li>
           <li><a href="#common-algorithms">Common Algorithms</a></li>
         </ul>
       </nav>
@@ -35,104 +42,250 @@
 
     <section id="what-is-ml" class="section">
       <h2>What Is Machine Learning?</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Instead of writing the rule, you write a program that finds the rule from examples.</p>
+      </div>
+
       <p>Machine learning is a way of building software that improves at a task by learning from data, rather than following rules a programmer wrote by hand. Instead of coding "if X then Y" for every case, you show the program many examples and let it find the pattern connecting the input to the output.</p>
-      <p>The result is a model: a function, fitted to data, that can make a prediction or decision on new examples it hasn't seen before.</p>
-      <svg viewBox="0 0 460 100" class="diagram" role="img" aria-labelledby="d1-title">
-        <title id="d1-title">Data flows into a model, which produces a prediction</title>
-        <rect x="10" y="30" width="120" height="40" rx="6" class="box"/>
-        <text x="70" y="55" class="box-label">Data</text>
-        <line x1="130" y1="50" x2="180" y2="50" class="arrow"/>
-        <polygon points="180,44 195,50 180,56" class="arrow-head"/>
-        <rect x="195" y="30" width="120" height="40" rx="6" class="box box-accent"/>
-        <text x="255" y="55" class="box-label-inverse">Model</text>
-        <line x1="315" y1="50" x2="365" y2="50" class="arrow"/>
-        <polygon points="365,44 380,50 365,56" class="arrow-head"/>
-        <rect x="330" y="30" width="120" height="40" rx="6" class="box"/>
-        <text x="390" y="55" class="box-label">Prediction</text>
-      </svg>
+      <p>The result is a model: a function, fitted to data, that can make a prediction or decision on new examples it hasn't seen before. What varies between methods is the <em>shape</em> of that function — a straight line, a tree of yes/no questions, a stack of matrix multiplications — and how its adjustable numbers, called <strong>parameters</strong>, are chosen.</p>
+      <p>The inputs are <strong>features</strong>: the measurable properties you hand the model, such as the sender of an email, the number of links in it, and the hour it arrived. The known answer attached to a training example is its <strong>label</strong>. Much of the practical work in machine learning is not choosing the algorithm but choosing and cleaning the features, because a model can only find patterns in what it is shown.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 100" class="diagram" role="img" aria-labelledby="d1-title">
+          <title id="d1-title">Data flows into a model, which produces a prediction</title>
+          <rect x="10" y="30" width="120" height="40" rx="6" class="box"/>
+          <text x="70" y="55" class="box-label">Data</text>
+          <line x1="130" y1="50" x2="180" y2="50" class="arrow"/>
+          <polygon points="180,44 195,50 180,56" class="arrow-head"/>
+          <rect x="195" y="30" width="120" height="40" rx="6" class="box box-accent"/>
+          <text x="255" y="55" class="box-label-inverse">Model</text>
+          <line x1="315" y1="50" x2="365" y2="50" class="arrow"/>
+          <polygon points="365,44 380,50 365,56" class="arrow-head"/>
+          <rect x="330" y="30" width="120" height="40" rx="6" class="box"/>
+          <text x="390" y="55" class="box-label">Prediction</text>
+        </svg>
+        <figcaption class="figure-caption">The whole field in three boxes. Everything that follows is a question about the middle one: what shape is it, how do its numbers get set, and how much should you trust what comes out of it?</figcaption>
+      </figure>
     </section>
 
     <section id="learning-types" class="section">
       <h2>Supervised, Unsupervised, and Reinforcement Learning</h2>
-      <p><strong>Supervised learning</strong> trains on labeled examples — each input comes with the correct answer attached, such as an email marked "spam" or "not spam." The model learns to map inputs to those known outputs.</p>
-      <p><strong>Unsupervised learning</strong> works on unlabeled data. There's no correct answer given; instead, the model finds structure on its own, such as grouping similar customers together (clustering) or identifying which features matter most.</p>
-      <p><strong>Reinforcement learning</strong> learns by trial and error inside an environment, receiving rewards or penalties for its actions. Rather than learning from a fixed dataset, it learns a strategy by acting, observing the outcome, and adjusting — the approach behind game-playing agents and robotics control.</p>
-      <svg viewBox="0 0 460 145" class="diagram" role="img" aria-labelledby="d2-title">
-        <title id="d2-title">Three learning types: supervised uses labeled data, unsupervised finds structure in unlabeled data, reinforcement learns from reward and penalty in a loop</title>
-        <rect x="10" y="10" width="130" height="50" rx="6" class="box"/>
-        <text x="75" y="32" class="box-label">Labeled data</text>
-        <text x="75" y="48" class="box-sublabel">Supervised</text>
-        <rect x="165" y="10" width="130" height="50" rx="6" class="box"/>
-        <text x="230" y="32" class="box-label">Unlabeled data</text>
-        <text x="230" y="48" class="box-sublabel">Unsupervised</text>
-        <rect x="320" y="10" width="130" height="50" rx="6" class="box box-accent"/>
-        <text x="385" y="32" class="box-label-inverse">Agent + Env</text>
-        <text x="385" y="48" class="box-sublabel-inverse">Reinforcement</text>
-        <line x1="420" y1="60" x2="420" y2="110" class="arrow"/>
-        <line x1="420" y1="110" x2="350" y2="110" class="arrow"/>
-        <line x1="350" y1="110" x2="350" y2="72" class="arrow"/>
-        <polygon points="344,72 350,60 356,72" class="arrow-head"/>
-        <text x="385" y="132" class="box-sublabel">reward / penalty loop</text>
-      </svg>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>What a model can learn is decided by what kind of feedback it gets: the right answer, no answer, or a score.</p>
+      </div>
+
+      <p><strong>Supervised learning</strong> trains on labeled examples — each input comes with the correct answer attached, such as an email marked "spam" or "not spam." The model learns to map inputs to those known outputs. It splits into <em>classification</em>, where the answer is one of a fixed set of categories, and <em>regression</em>, where the answer is a number.</p>
+      <p><strong>Unsupervised learning</strong> works on unlabeled data. There's no correct answer given; instead, the model finds structure on its own, such as grouping similar customers together (clustering), compressing many correlated features into a few (dimensionality reduction), or flagging points that don't look like the rest (anomaly detection).</p>
+      <p><strong>Reinforcement learning</strong> learns by trial and error inside an environment, receiving rewards or penalties for its actions. Rather than learning from a fixed dataset, it learns a strategy — a <em>policy</em> — by acting, observing the outcome, and adjusting. It is the approach behind game-playing systems and robotics control, and, in modified form, behind the preference tuning that turns a raw language model into a usable assistant.</p>
+      <p>A fourth term worth knowing: <strong>self-supervised learning</strong>, where labels are generated from the data itself — hide part of a sentence and ask the model to predict it. There is no annotation cost, so it can consume enormous corpora. This is how modern language models are trained, and it is the reason they exist at the scale they do.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 145" class="diagram" role="img" aria-labelledby="d2-title">
+          <title id="d2-title">Three learning types: supervised uses labeled data, unsupervised finds structure in unlabeled data, reinforcement learns from reward and penalty in a loop</title>
+          <rect x="10" y="10" width="130" height="50" rx="6" class="box"/>
+          <text x="75" y="32" class="box-label">Labeled data</text>
+          <text x="75" y="48" class="box-sublabel">Supervised</text>
+          <rect x="165" y="10" width="130" height="50" rx="6" class="box"/>
+          <text x="230" y="32" class="box-label">Unlabeled data</text>
+          <text x="230" y="48" class="box-sublabel">Unsupervised</text>
+          <rect x="320" y="10" width="130" height="50" rx="6" class="box box-accent"/>
+          <text x="385" y="32" class="box-label-inverse">Agent + Env</text>
+          <text x="385" y="48" class="box-sublabel-inverse">Reinforcement</text>
+          <line x1="420" y1="60" x2="420" y2="110" class="arrow"/>
+          <line x1="420" y1="110" x2="350" y2="110" class="arrow"/>
+          <line x1="350" y1="110" x2="350" y2="72" class="arrow"/>
+          <polygon points="344,72 350,60 356,72" class="arrow-head"/>
+          <text x="385" y="132" class="box-sublabel">reward / penalty loop</text>
+        </svg>
+        <figcaption class="figure-caption">Only the third one has a loop. Supervised and unsupervised learning consume a dataset that already exists; reinforcement learning generates its own data by acting, which is why it is both powerful and hard to stabilise.</figcaption>
+      </figure>
+    </section>
+
+    <section id="how-models-learn" class="section">
+      <h2>How a Model Actually Learns</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Training is a search: measure how wrong the model is, work out which direction reduces that error, take a small step, repeat.</p>
+      </div>
+
+      <p>"Learning" sounds vague until you see the mechanism, which is the same one in almost every method that involves fitting parameters. It has three parts.</p>
+      <p>First, a <strong>loss function</strong> turns the model's wrongness into a single number. For regression that is often mean squared error, the average of the squared gaps between prediction and truth. For classification it is usually cross-entropy, which punishes a model for being confidently wrong far more than for being uncertain. The loss is the definition of "good" that the model will optimise, so choosing it badly is a way of solving the wrong problem precisely.</p>
+      <p>Second, the <strong>gradient</strong> tells you which way is downhill. It is the derivative of the loss with respect to each parameter — the answer to "if I nudge this one number up slightly, does the error grow or shrink, and how fast?"</p>
+      <p>Third, <strong>gradient descent</strong> takes the step. Every parameter moves a little in the direction that reduces loss, scaled by a <strong>learning rate</strong>. Too large a rate and training bounces around or diverges; too small and it crawls. In practice the gradient is computed on a small random <em>batch</em> of examples rather than the whole dataset — stochastic gradient descent — and one pass over the data is called an <strong>epoch</strong>.</p>
+      <p>That loop, run millions of times, is what "training" means, whether the model has three parameters or three hundred billion.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 168" class="diagram" role="img" aria-labelledby="d3-title">
+          <title id="d3-title">A U-shaped loss curve with points stepping down its slope toward the minimum, illustrating gradient descent</title>
+          <line x1="34" y1="8" x2="34" y2="128" class="axis"/>
+          <line x1="34" y1="128" x2="442" y2="128" class="axis"/>
+          <text x="12" y="68" class="axis-label" transform="rotate(-90 12 68)">Loss</text>
+          <text x="238" y="152" class="axis-label">Parameter value</text>
+          <path d="M60 20 Q235 175 410 20" class="line-train"/>
+          <polyline points="95,48 137,73 179,90 214,96 235,98" class="line-test" stroke-dasharray="5 4"/>
+          <circle cx="95" cy="48" r="4.5" class="node"/>
+          <circle cx="137" cy="73" r="4.5" class="node"/>
+          <circle cx="179" cy="90" r="4.5" class="node"/>
+          <circle cx="214" cy="96" r="4.5" class="node"/>
+          <circle cx="235" cy="98" r="5.5" class="node node-accent"/>
+          <text x="112" y="36" class="note">start</text>
+          <text x="252" y="112" class="note note-accent">minimum</text>
+        </svg>
+        <figcaption class="figure-caption">Each dot is one update. The steps are large where the slope is steep and shrink as the curve flattens, because the gradient itself gets smaller — which is why a model's loss falls fast at first and then grinds. Real loss surfaces have millions of dimensions and many local dips; this is the one-parameter cartoon of them.</figcaption>
+      </figure>
     </section>
 
     <section id="train-test-split" class="section">
       <h2>The Train/Test Split</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>A score on data the model has already seen is not a score, it is a memory test.</p>
+      </div>
+
       <p>A model that's only ever evaluated on the data it was trained on will look better than it really is — it can memorize answers instead of learning general patterns. To catch this, the available data is split: most of it (the <strong>training set</strong>) is used to fit the model, and a held-out portion (the <strong>test set</strong>) is used only to measure how well it performs on examples it never saw during training.</p>
-      <p>A common split is 80% training, 20% testing, though the right ratio depends on how much data is available.</p>
-      <svg viewBox="0 0 460 70" class="diagram" role="img" aria-labelledby="d3-title">
-        <title id="d3-title">A bar split into 80 percent training data and 20 percent test data</title>
-        <rect x="10" y="15" width="360" height="40" rx="4" class="box-accent"/>
-        <rect x="370" y="15" width="90" height="40" rx="4" class="box"/>
-        <text x="190" y="40" class="box-label-inverse">Training (80%)</text>
-        <text x="415" y="40" class="box-label">Test (20%)</text>
-      </svg>
+      <p>A common split is 80% training, 20% testing, though the right ratio depends on how much data is available. Serious projects carve out a third slice, the <strong>validation set</strong>, used to tune choices such as the learning rate or the model size — because every time you look at a score and change something in response, you leak a little information from that data into the model. The test set is spent the moment you start optimising against it, so it is kept sealed until the end.</p>
+      <p>When data is scarce, <strong>cross-validation</strong> gets more out of it: split the data into <em>k</em> folds, train <em>k</em> times, each time holding out a different fold, and average the scores.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 70" class="diagram" role="img" aria-labelledby="d4-title">
+          <title id="d4-title">A bar split into 80 percent training data and 20 percent test data</title>
+          <rect x="10" y="15" width="360" height="40" rx="4" class="box-accent"/>
+          <rect x="370" y="15" width="90" height="40" rx="4" class="box"/>
+          <text x="190" y="40" class="box-label-inverse">Training (80%)</text>
+          <text x="415" y="40" class="box-label">Test (20%)</text>
+        </svg>
+        <figcaption class="figure-caption">The split has to happen before anything else — before scaling features, before filling in missing values — or statistics computed from the test set bleed into training, and the held-out score quietly stops being held out.</figcaption>
+      </figure>
     </section>
 
     <section id="overfitting" class="section">
       <h2>Overfitting</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>A model powerful enough to learn the pattern is also powerful enough to memorise the noise.</p>
+      </div>
+
       <p>Overfitting happens when a model learns the training data too well — including its noise and quirks — rather than the general pattern underneath. An overfit model scores extremely well on training data but performs poorly on new, unseen data, because it memorized specifics instead of learning something that generalizes.</p>
-      <p>The train/test split exists specifically to detect this: a big gap between training accuracy and test accuracy is the classic sign of overfitting.</p>
-      <svg viewBox="0 0 460 140" class="diagram" role="img" aria-labelledby="d4-title">
-        <title id="d4-title">Line chart of training error steadily decreasing while test error decreases then rises again as model complexity grows, showing the overfitting gap</title>
-        <line x1="30" y1="10" x2="30" y2="110" class="axis"/>
-        <line x1="30" y1="110" x2="440" y2="110" class="axis"/>
-        <text x="0" y="65" class="axis-label" transform="rotate(-90 12 65)">Error</text>
-        <text x="220" y="130" class="axis-label">Model complexity</text>
-        <polyline points="40,32 120,58 200,74 280,85 360,92 430,97" class="line-train"/>
-        <polyline points="40,38 120,64 200,78 280,80 360,62 430,30" class="line-test"/>
-        <text x="428" y="90" class="legend-train">Training error</text>
-        <text x="428" y="23" class="legend-test">Test error</text>
-      </svg>
+      <p>The train/test split exists specifically to detect this: a big gap between training accuracy and test accuracy is the classic sign. The opposite failure, <strong>underfitting</strong>, is a model too simple to capture the pattern at all — it scores badly on both sets. Between them sits the bias–variance trade-off, the reason model selection is a balance rather than a maximisation.</p>
+      <p>The standard defences are all forms of "make it harder to memorise": collect more data, simplify the model, add a <strong>regularisation</strong> penalty on large parameter values, stop training early when the validation score turns, or — in neural networks — randomly switch off units during training so no single one can carry a memorised answer.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 140" class="diagram" role="img" aria-labelledby="d5-title">
+          <title id="d5-title">Line chart of training error steadily decreasing while test error decreases then rises again as model complexity grows, showing the overfitting gap</title>
+          <line x1="30" y1="10" x2="30" y2="110" class="axis"/>
+          <line x1="30" y1="110" x2="440" y2="110" class="axis"/>
+          <text x="12" y="65" class="axis-label" transform="rotate(-90 12 65)">Error</text>
+          <text x="220" y="130" class="axis-label">Model complexity</text>
+          <polyline points="40,32 120,58 200,74 280,85 360,92 430,97" class="line-train"/>
+          <polyline points="40,38 120,64 200,78 280,80 360,62 430,30" class="line-test"/>
+          <text x="428" y="90" class="legend-train">Training error</text>
+          <text x="428" y="23" class="legend-test">Test error</text>
+        </svg>
+        <figcaption class="figure-caption">The turning point in the gold line is the whole story: past it, every extra unit of complexity buys a better fit to this dataset and a worse model of the world. Early stopping is simply the decision to quit at that bend.</figcaption>
+      </figure>
+    </section>
+
+    <section id="evaluation" class="section">
+      <h2>Measuring a Model Honestly</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>Accuracy is the metric that lies most often, because it treats every kind of mistake as the same mistake.</p>
+      </div>
+
+      <p>Consider a fraud detector on a dataset where one transaction in a thousand is fraudulent. A model that answers "not fraud" every single time is 99.9% accurate and completely worthless. To see that, you need to separate the kinds of error, which is what a <strong>confusion matrix</strong> does: it counts the four possible combinations of what was true and what was predicted.</p>
+      <p>From those four counts come the metrics that actually matter:</p>
+      <ul>
+        <li><strong>Precision</strong> — of everything the model flagged, how much was right: <code>TP / (TP + FP)</code>. Low precision means false alarms.</li>
+        <li><strong>Recall</strong> — of everything it should have flagged, how much it caught: <code>TP / (TP + FN)</code>. Low recall means misses.</li>
+        <li><strong>F1</strong> — the harmonic mean of the two, for when you need one number and both errors matter.</li>
+      </ul>
+      <p>Precision and recall trade against each other: move the decision threshold to catch more real cases and you will also flag more innocent ones. Which way to lean is a domain question, not a modelling one. A cancer screen should tolerate false alarms to avoid misses; a spam filter should do the opposite, because a lost job offer costs more than a junk mail in the inbox.</p>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 180" class="diagram" role="img" aria-labelledby="d6-title">
+          <title id="d6-title">A two by two confusion matrix, with true positive and true negative on the diagonal and false negative and false positive off it</title>
+          <text x="210" y="36" class="tick tick-mid">Predicted: spam</text>
+          <text x="330" y="36" class="tick tick-mid">Predicted: not spam</text>
+          <text x="142" y="77" class="tick tick-end">Actual: spam</text>
+          <text x="142" y="135" class="tick tick-end">Actual: not spam</text>
+
+          <rect x="150" y="48" width="120" height="58" rx="4" class="box-accent"/>
+          <text x="210" y="70" class="box-label-inverse">True positive</text>
+          <text x="210" y="88" class="box-sublabel-inverse">caught spam</text>
+
+          <rect x="270" y="48" width="120" height="58" rx="4" class="box"/>
+          <text x="330" y="70" class="box-label">False negative</text>
+          <text x="330" y="88" class="box-sublabel">missed spam</text>
+
+          <rect x="150" y="106" width="120" height="58" rx="4" class="box"/>
+          <text x="210" y="128" class="box-label">False positive</text>
+          <text x="210" y="146" class="box-sublabel">good mail junked</text>
+
+          <rect x="270" y="106" width="120" height="58" rx="4" class="box-accent"/>
+          <text x="330" y="128" class="box-label-inverse">True negative</text>
+          <text x="330" y="146" class="box-sublabel-inverse">delivered fine</text>
+        </svg>
+        <figcaption class="figure-caption">The gold diagonal is what went right; the other two cells are two genuinely different failures. Precision is read across the first column, recall across the first row — and almost every argument about whether a model is "good" is really an argument about which of those two cells you can afford.</figcaption>
+      </figure>
     </section>
 
     <section id="common-algorithms" class="section">
       <h2>Common Algorithms</h2>
+
+      <div class="callout">
+        <span class="callout-label">Key idea</span>
+        <p>A handful of model shapes cover most classical problems, and the boring ones win more often than people expect.</p>
+      </div>
+
       <p>A few algorithms show up across most introductions to the field:</p>
       <ul>
-        <li><strong>Linear regression</strong> — predicts a continuous number by fitting a straight-line relationship between inputs and output.</li>
-        <li><strong>Logistic regression</strong> — despite the name, used for classification: predicting one of a fixed set of categories.</li>
-        <li><strong>Decision trees</strong> — make predictions by asking a sequence of yes/no questions about the input, learned from the data.</li>
-        <li><strong>k-means clustering</strong> — an unsupervised method that groups data points into a chosen number of clusters based on similarity.</li>
-        <li><strong>Neural networks</strong> — layers of simple connected units that combine to approximate complex, non-linear relationships between inputs and outputs.</li>
+        <li><strong>Linear regression</strong> — predicts a continuous number by fitting a straight-line relationship between inputs and output. Fast, and its coefficients can be read as an explanation.</li>
+        <li><strong>Logistic regression</strong> — despite the name, used for classification: it squashes a linear score through a sigmoid to produce a probability between 0 and 1.</li>
+        <li><strong>Decision trees</strong> — make predictions by asking a sequence of yes/no questions about the input, each one chosen to separate the data as cleanly as possible.</li>
+        <li><strong>Random forests and gradient boosting</strong> — hundreds of trees combined, each correcting the others. On ordinary tabular data these remain the strongest thing to reach for, and they routinely beat neural networks on it.</li>
+        <li><strong>k-means clustering</strong> — an unsupervised method that groups data points into a chosen number of clusters by repeatedly assigning each point to the nearest cluster centre and recomputing the centres.</li>
+        <li><strong>Neural networks</strong> — layers of simple connected units that combine to approximate complex, non-linear relationships. They dominate where the input is unstructured — images, audio, text — which is exactly where the rest of this guide goes next.</li>
       </ul>
-      <svg viewBox="0 0 460 130" class="diagram" role="img" aria-labelledby="d5-title">
-        <title id="d5-title">A small decision tree: a root question splitting into two branches, each splitting again into leaf outcomes</title>
-        <circle cx="230" cy="15" r="16" class="node node-accent"/>
-        <line x1="230" y1="31" x2="120" y2="60" class="arrow"/>
-        <line x1="230" y1="31" x2="340" y2="60" class="arrow"/>
-        <circle cx="120" cy="70" r="16" class="node"/>
-        <circle cx="340" cy="70" r="16" class="node"/>
-        <line x1="120" y1="86" x2="60" y2="115" class="arrow"/>
-        <line x1="120" y1="86" x2="180" y2="115" class="arrow"/>
-        <line x1="340" y1="86" x2="280" y2="115" class="arrow"/>
-        <line x1="340" y1="86" x2="400" y2="115" class="arrow"/>
-        <rect x="35" y="112" width="50" height="18" rx="4" class="leaf"/>
-        <rect x="155" y="112" width="50" height="18" rx="4" class="leaf"/>
-        <rect x="255" y="112" width="50" height="18" rx="4" class="leaf"/>
-        <rect x="375" y="112" width="50" height="18" rx="4" class="leaf"/>
-      </svg>
+
+      <figure class="figure">
+        <svg viewBox="0 0 460 130" class="diagram" role="img" aria-labelledby="d7-title">
+          <title id="d7-title">A small decision tree: a root question splitting into two branches, each splitting again into leaf outcomes</title>
+          <circle cx="230" cy="15" r="16" class="node node-accent"/>
+          <line x1="230" y1="31" x2="120" y2="60" class="arrow"/>
+          <line x1="230" y1="31" x2="340" y2="60" class="arrow"/>
+          <circle cx="120" cy="70" r="16" class="node"/>
+          <circle cx="340" cy="70" r="16" class="node"/>
+          <line x1="120" y1="86" x2="60" y2="115" class="arrow"/>
+          <line x1="120" y1="86" x2="180" y2="115" class="arrow"/>
+          <line x1="340" y1="86" x2="280" y2="115" class="arrow"/>
+          <line x1="340" y1="86" x2="400" y2="115" class="arrow"/>
+          <rect x="35" y="112" width="50" height="18" rx="4" class="leaf"/>
+          <rect x="155" y="112" width="50" height="18" rx="4" class="leaf"/>
+          <rect x="255" y="112" width="50" height="18" rx="4" class="leaf"/>
+          <rect x="375" y="112" width="50" height="18" rx="4" class="leaf"/>
+        </svg>
+        <figcaption class="figure-caption">A decision tree, the most legible model there is: every prediction can be traced back through the questions that produced it. Depth is its overfitting dial — a tree allowed to grow until every leaf holds one example has memorised the training set exactly.</figcaption>
+      </figure>
     </section>
+
+    <nav class="pager" aria-label="Chapter navigation">
+      <a class="pager-link" href="index.html#chapters">
+        <span class="pager-dir">Index</span>
+        <span class="pager-title">All chapters</span>
+      </a>
+      <a class="pager-link pager-next" href="modern-ai.html#neural-networks">
+        <span class="pager-dir">Next — Part II</span>
+        <span class="pager-title">Transformers, LLMs and Agents</span>
+      </a>
+    </nav>
   </main>
 
   <hr class="hr hr-flush">
