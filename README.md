@@ -88,9 +88,11 @@ directory so the deploy doesn't rely on dashboard detection.
 CI (`.github/workflows/ci.yml`) runs the full test suite on every push and PR to
 `master`. Deploys are **manual** — trigger the `workflow_dispatch` on the CI
 workflow, which builds and promotes to production via the Vercel CLI. `vercel
-pull` in that job needs `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`
-in the repository's secrets — the token alone is not enough, because `.vercel/`
-is gitignored and the job has nothing to link the checkout to a project.
+pull` in that job runs with `VERCEL_TOKEN` alone. On paper that should not be
+enough to link the checkout to a project — `.vercel/` is gitignored and no
+`VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` is set — yet the deploy succeeds. The
+mechanism is unexplained; read a deploy run's log before changing this job. If
+it ever breaks, adding those two as repository secrets is the documented fix.
 
 ## Layout
 

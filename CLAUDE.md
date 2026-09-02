@@ -2,6 +2,7 @@
 
 - folder to use in Obsidian: 'static-webpage'
 - create feature branch for each new feature from master branch, commit changes with meaningful messages, and create a pull request for review before merging into the main branch.
+- **This describes how validated work reaches `master` — it is not licence to decide that work is validated.** The user runs everything outward-facing: push, PR, merge, deploy. Commit to the branch, prepare the exact command, and stop. Ask before pushing or opening anything.
 
 ## Stack
 
