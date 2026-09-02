@@ -16,7 +16,7 @@ So the same token values exist twice, in `src/index.css` and `public/design-syst
 
 Class names like `.chapter`, `.nav-cta` and `.site-nav` survive in the React markup with no styling attached. They are the hooks the Playwright suite addresses; keep them.
 
-`npm test` builds first, then validates the built HTML and runs Playwright against `dist/`.
+`npm test` validates the hand-written HTML (`index.html` + `public/*.html`), builds, then runs Playwright against `dist/`.
 
 ## Agent skills
 

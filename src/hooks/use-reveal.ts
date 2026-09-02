@@ -6,8 +6,9 @@ import { useEffect } from 'react';
  * Whether the effect runs at all is decided before first paint by the inline
  * script in index.html, which puts `js-reveal` on <html> only when the browser
  * has IntersectionObserver and motion is not reduced. Reading that class here
- * keeps the decision in one place, and means a page rendered without JS shows
- * every row at full opacity instead of an empty column.
+ * keeps the decision in one place: under reduced motion, or in a browser without
+ * IntersectionObserver, every row renders at full opacity and this hook is a
+ * no-op.
  */
 export function useRevealOnScroll() {
   useEffect(() => {

@@ -32,7 +32,7 @@ shadcn component inherits the parchment and gilt with no per-component overrides
 
 ## Requirements
 
-- Node 24 (what CI runs; anything ≥20 should work)
+- Node 24 (what CI runs; ≥20.11 is the real floor — `vite.config.ts` uses `import.meta.dirname`)
 - npm
 
 ## Running it
@@ -60,13 +60,14 @@ npm run preview   # serves dist/ at http://localhost:4173
 npm test
 ```
 
-That builds first, then runs both suites against `dist/` — never against the dev
-server, because `dist/` is the only place the React landing page and the static
-article pages sit side by side the way Vercel serves them.
+That validates the source HTML, builds, then drives the build. Playwright runs
+against `dist/` and never against the dev server, because `dist/` is the only
+place the React landing page and the static article pages sit side by side the
+way Vercel serves them.
 
 | Script | What it checks |
 | --- | --- |
-| `npm run test:html` | `html-validate` over the three built pages |
+| `npm run test:html` | `html-validate` over the hand-written HTML: `index.html` and the two article pages. The React landing markup is not hand-written, so Playwright and axe cover it instead. |
 | `npm run test:a11y` | Playwright: content, links, layout, and axe-core against WCAG 2 A/AA |
 
 The Playwright suite addresses semantic class names — `.chapter`, `.site-nav`,
@@ -86,8 +87,10 @@ directory so the deploy doesn't rely on dashboard detection.
 
 CI (`.github/workflows/ci.yml`) runs the full test suite on every push and PR to
 `master`. Deploys are **manual** — trigger the `workflow_dispatch` on the CI
-workflow, which builds and promotes to production via the Vercel CLI. It needs a
-`VERCEL_TOKEN` repository secret.
+workflow, which builds and promotes to production via the Vercel CLI. `vercel
+pull` in that job needs `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`
+in the repository's secrets — the token alone is not enough, because `.vercel/`
+is gitignored and the job has nothing to link the checkout to a project.
 
 ## Layout
 
@@ -105,6 +108,8 @@ tests/                  Playwright specs
 docs/agents/            conventions for agents working in this repo
 ```
 
-Scroll reveal is progressive enhancement: `index.html` sets `js-reveal` on
-`<html>` before first paint, and only when `IntersectionObserver` exists and
-motion isn't reduced. With JS off, every row simply renders visible.
+Scroll reveal is decided before first paint: `index.html` sets `js-reveal` on
+`<html>` only when `IntersectionObserver` exists and motion isn't reduced, and
+the hook reads that class rather than re-deciding. Note that the landing page is
+client-rendered — with JS off it renders nothing at all, unlike the two article
+pages, which stay fully readable. Prerendering it would fix that.
