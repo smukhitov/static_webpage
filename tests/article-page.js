@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
-const AxeBuilder = require('@axe-core/playwright').default;
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 /**
  * The checks every chapter page has to pass. Both parts share one layout, one
@@ -14,7 +14,7 @@ const AxeBuilder = require('@axe-core/playwright').default;
  * @param {number} spec.diagrams    how many labelled SVG diagrams it carries
  * @param {string} spec.stylesheet  the page-specific stylesheet
  */
-function describeArticlePage({ path, title, headings, diagrams, stylesheet }) {
+export function describeArticlePage({ path, title, headings, diagrams, stylesheet }) {
   test.beforeEach(async ({ page }) => {
     await page.goto(path);
   });
@@ -85,17 +85,15 @@ function describeArticlePage({ path, title, headings, diagrams, stylesheet }) {
     }
   });
 
-  test('shares the design system stylesheet with the landing page', async ({ page }) => {
+  // The landing page has moved to React and Tailwind, where the same Classical
+  // tokens are declared in src/index.css. Until these two pages follow, they
+  // keep loading design-system.css themselves — so what this can still check is
+  // that the shared sheet comes first and the page's own sheet layers on top.
+  test('layers its own stylesheet over the shared design system', async ({ page }) => {
     const sheets = await page.locator('link[rel=stylesheet]').evaluateAll((links) =>
       links.map((l) => l.getAttribute('href'))
     );
     expect(sheets).toEqual(['design-system.css', stylesheet]);
-
-    await page.goto('/');
-    const landingSheets = await page.locator('link[rel=stylesheet]').evaluateAll((links) =>
-      links.map((l) => l.getAttribute('href'))
-    );
-    expect(landingSheets).toEqual(['design-system.css', 'landing.css']);
   });
 
   // The wide diagrams are 640px and do not shrink; they scroll inside their own
@@ -127,4 +125,4 @@ function describeArticlePage({ path, title, headings, diagrams, stylesheet }) {
   });
 }
 
-module.exports = { describeArticlePage };
+
