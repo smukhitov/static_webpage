@@ -16,8 +16,8 @@ export function SiteNav() {
     <nav
       aria-label="Primary"
       className={[
-        'site-nav flex flex-wrap items-center gap-[18.4px] border-b border-divider',
-        'py-[13.8px]',
+        'site-nav flex flex-wrap items-center gap-4 border-b border-divider',
+        'py-3',
         // Keeps the nav row aligned with the content column.
         'px-[max(var(--page-gutter),calc((100%-var(--page-width))/2+var(--page-gutter)))]',
         // The chapters run long; the nav stays reachable the whole way down.
@@ -31,7 +31,7 @@ export function SiteNav() {
         // nav to its own layer and drop the text from subpixel to grayscale
         // antialiasing.
         'max-[760px]:static max-[760px]:[backdrop-filter:none]',
-        'max-[760px]:gap-x-[13.8px] max-[760px]:gap-y-[9.2px] max-[760px]:py-[9.2px]',
+        'max-[760px]:gap-x-3 max-[760px]:gap-y-2 max-[760px]:py-2',
       ].join(' ')}
     >
       <span className="nav-brand mr-auto font-heading text-[18px] font-semibold max-[760px]:text-[16px]">
