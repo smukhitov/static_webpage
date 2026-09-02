@@ -22,7 +22,7 @@ export function SiteNav() {
         'px-[max(var(--page-gutter),calc((100%-var(--page-width))/2+var(--page-gutter)))]',
         // The chapters run long; the nav stays reachable the whole way down.
         'sticky top-0 z-10 backdrop-blur-[10px]',
-        'bg-[color-mix(in_srgb,var(--color-parchment)_94%,transparent)]',
+        'bg-[color-mix(in_srgb,var(--parchment)_94%,transparent)]',
         // A phone cannot fit brand, links and call to action on one line, and a
         // two-row sticky bar costs more viewport than it is worth. Below this
         // width it scrolls away with the rest of the page.

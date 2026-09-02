@@ -44,7 +44,7 @@ export function describeArticlePage({ path, title, headings, diagrams, styleshee
       const sheets = await page
         .locator('link[rel=stylesheet]')
         .evaluateAll((links) => links.map((l) => l.getAttribute('href')));
-      expect(sheets).toEqual(['design-system.css', stylesheet]);
+      expect(sheets).toEqual(['tokens.css', 'design-system.css', stylesheet]);
 
       const current = page.locator('.site-nav [aria-current="page"]');
       await expect(current).toHaveCount(1);
