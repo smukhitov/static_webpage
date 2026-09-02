@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/button';
 
 /* The nav row keeps its `site-nav` / `nav-brand` / `nav-cta` class names. They
    carry no styling any more — Tailwind does that — but they are the hooks the
@@ -50,9 +50,7 @@ export function SiteNav() {
           here holds the port pixel-identical; whether to let the gilt through
           is a design decision, not a migration one. */}
       <Button
-        variant="classical"
-        size="classical"
-        className="nav-cta shrink-0 whitespace-nowrap text-foreground no-underline"
+        className="nav-cta text-foreground no-underline"
         render={<a href="fundamentals.html#what-is-ml" />}
       >
         Start reading

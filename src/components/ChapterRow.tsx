@@ -1,4 +1,4 @@
-import type { Chapter } from '@/data/chapters';
+import type { Chapter } from '@/chapters';
 
 /**
  * One chapter: number, text block, and the line drawing that stands for it.
