@@ -26,32 +26,28 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
-test('the landing page is served at the site root', async ({ page }) => {
+test('is the index for both parts, in order', async ({ page }) => {
   await expect(page).toHaveTitle('Machine Learning Fundamentals');
   await expect(page.locator('h1')).toHaveText(/Machine learning,\s*explained from the beginning\./);
-});
 
-test('lists every chapter of both parts, in order', async ({ page }) => {
-  const titles = await page.locator('.chapter .chapter-title').allTextContents();
-  expect(titles).toEqual(CHAPTERS.map((c) => c.title));
-});
+  expect(await page.locator('.chapter .chapter-title').allTextContents()).toEqual(
+    CHAPTERS.map((c) => c.title)
+  );
 
-test('splits the chapters into the two parts', async ({ page }) => {
   await expect(page.locator('.part')).toHaveCount(2);
   await expect(page.locator('#part-foundations .chapter')).toHaveCount(7);
   await expect(page.locator('#part-modern .chapter')).toHaveCount(8);
 });
 
 test('every chapter links to a section that exists on its article page', async ({ page }) => {
-  const hrefs = await page.locator('.chapter').evaluateAll((links) =>
-    links.map((a) => a.getAttribute('href'))
-  );
+  const hrefs = await page
+    .locator('.chapter')
+    .evaluateAll((links) => links.map((a) => a.getAttribute('href')));
   expect(hrefs).toEqual(CHAPTERS.map((c) => `${c.page}#${c.target}`));
 
   for (const article of ['fundamentals.html', 'modern-ai.html']) {
     await page.goto(`/${article}`);
-    const targets = CHAPTERS.filter((c) => c.page === article).map((c) => c.target);
-    for (const target of targets) {
+    for (const { target } of CHAPTERS.filter((c) => c.page === article)) {
       await expect(page.locator(`#${target}`)).toHaveCount(1);
     }
   }
@@ -89,8 +85,6 @@ test('has no detectable WCAG 2 A/AA accessibility violations', async ({ page }) 
   await page.goto('/');
   await expect(page.locator('html')).not.toHaveClass(/js-reveal/);
 
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
-    .analyze();
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(results.violations).toEqual([]);
 });
