@@ -22,6 +22,8 @@
   --color-gilt-800: var(--gilt-800);
   --color-divider: var(--divider);
 
+  /* Identity mappings: these names are already Tailwind's. They work only
+     because `inline` keeps the theme from emitting them back into :root. */
   --font-heading: var(--font-heading);
   --font-body: var(--font-body);
   --font-sans: var(--font-body);
@@ -47,13 +49,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-md: var(--radius-md);
 }
 
 :root {
@@ -75,17 +71,6 @@
   --border: var(--divider);
   --input: var(--divider);
   --ring: var(--gilt-700);
-
-  /* Classical's --radius-md is 4px; shadcn derives radius-md as radius * 0.8. */
-  --radius: 5px;
-}
-
-/* Below this width the nav scrolls away with the page rather than sticking, so
-   anchored sections no longer need to clear it. */
-@media (width < 760px) {
-  :root {
-    --nav-height: 0px;
-  }
 }
 
 @layer base {

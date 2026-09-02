@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { expectClearOfStickyNav } from './article-page.js';
+import { expectClearOfStickyNav } from './nav-clearance.js';
 
 // The landing page is the index for both parts; the order here is the order
 // the rows must appear in, and every href must resolve to a real section.
@@ -55,7 +55,7 @@ test('every chapter links to a section that exists on its article page', async (
 });
 
 test('the nav reaches both parts and the first chapter', async ({ page }) => {
-  await expectClearOfStickyNav(page, '.site-nav a[href="#part-foundations"]', 'part-foundations');
+  await expectClearOfStickyNav(page, page.locator('.site-nav a[href="#part-foundations"]'));
 
   await page.locator('.nav-cta').click();
   await expect(page).toHaveURL(/\/fundamentals\.html#what-is-ml$/);

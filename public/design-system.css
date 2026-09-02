@@ -143,8 +143,6 @@ a:hover { color: var(--gilt-800); }
    Below this width it scrolls away with the rest of the page, and anchored
    sections no longer need to clear it. */
 @media (width < 760px) {
-  :root { --nav-height: 0px; }
-
   .site-nav {
     position: static;
     backdrop-filter: none;

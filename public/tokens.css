@@ -41,3 +41,11 @@
   /* The sticky nav's own height, so anchored sections can scroll clear of it. */
   --nav-height: 60px;
 }
+
+/* Below this width the nav scrolls with the page instead of sticking, so
+   anchored sections no longer need to clear it. */
+@media (width < 760px) {
+  :root {
+    --nav-height: 0px;
+  }
+}

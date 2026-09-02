@@ -1,4 +1,4 @@
-import { Button } from '@/components/button';
+import { Button } from '@/components/Button';
 
 /* `site-nav`, `nav-brand` and `nav-cta` carry no styling; they are test hooks.
    See CONTEXT.md's "Test hook" entry for the full list. */

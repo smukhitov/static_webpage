@@ -1,33 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-
-/**
- * Jumps to an anchor and asserts the target section lands clear of the sticky
- * nav. `--nav-height` is a transcription of a measured layout and has gone
- * stale before, so this checks the outcome rather than the number.
- *
- * @param {import('@playwright/test').Page} page
- * @param {string} link  selector for the anchor link to follow
- * @param {string} id    the section it targets, without the '#'
- */
-export async function expectClearOfStickyNav(page, link, id) {
-  // Anchor jumps animate, and the web fonts reflow the page under a scroll
-  // position already chosen. Settle both before jumping.
-  await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
-  await page.evaluate(() => document.fonts.ready);
-  await page.locator(link).click();
-
-  const gap = await page.evaluate((selector) => {
-    const nav = document.querySelector('.site-nav');
-    if (getComputedStyle(nav).position !== 'sticky') return null;
-    const section = document.querySelector(selector).getBoundingClientRect();
-    return section.top - nav.getBoundingClientRect().bottom;
-  }, `#${id}`);
-
-  expect(gap, 'the nav is not sticky here, so the check proves nothing').not.toBeNull();
-  expect(gap, `#${id} sits under the sticky nav`).toBeGreaterThanOrEqual(0);
-}
+import { expectClearOfStickyNav } from './nav-clearance.js';
 
 /**
  * The checks every chapter page has to pass; each spec supplies only what
@@ -80,8 +54,7 @@ export function describeArticlePage({ path, title, headings, diagrams, styleshee
         expect(response.ok(), `${href} is a dead link`).toBe(true);
       }
 
-      const first = await page.locator('.toc a').first().getAttribute('href');
-      await expectClearOfStickyNav(page, '.toc a >> nth=0', first.slice(1));
+      await expectClearOfStickyNav(page, page.locator('.toc a').first());
 
       await page.locator('.nav-brand a').click();
       await expect(page).toHaveURL(/\/index\.html$/);
