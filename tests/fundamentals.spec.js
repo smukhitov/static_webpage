@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
-const { describeArticlePage } = require('./article-page');
+import { test, expect } from '@playwright/test';
+import { describeArticlePage } from './article-page.js';
 
 describeArticlePage({
   path: '/fundamentals.html',

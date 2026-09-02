@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ==========================================================================
+   Classical, on Tailwind.
+
+   The token values below are the same ones public/design-system.css serves to
+   the two static article pages — that file stays the source of truth until
+   those pages are ported too, so any change here must be mirrored there.
+
+   shadcn's component contract (--background, --primary, --border, …) is
+   satisfied *from* the Classical ramp rather than beside it, so a stock
+   component picks up the parchment and gilt without per-component overrides.
+   ========================================================================== */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* — Classical palette, own namespace so it cannot collide with shadcn's
+       --color-accent (which shadcn binds to its hover token). — */
+  --color-parchment: #f3f2f2;
+  --color-parchment-raised: #eae9e9;
+  --color-gilt: #b68235;
+  --color-gilt-100: #fff3e4;
+  --color-gilt-600: #a06f24;
+  --color-gilt-700: #7d5411;
+  --color-gilt-800: #5a3b0a;
+
+  /* The muted ink that carries secondary text and every diagram's line work. */
+  --color-ink: #201f1d;
+  --color-ink-55: color-mix(in srgb, #201f1d 55%, transparent);
+  --color-ink-70: color-mix(in srgb, #201f1d 70%, transparent);
+  --color-ink-78: color-mix(in srgb, #201f1d 78%, transparent);
+  --color-ink-82: color-mix(in srgb, #201f1d 82%, transparent);
+  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
+
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Lora", Georgia, serif;
+  --font-sans: "Lora", Georgia, serif;
+
+  /* The shared content column, and the sticky nav's own height so anchored
+     sections can scroll clear of it. */
+  --page-width: 1040px;
+  --page-gutter: 24px;
+  --nav-height: 57px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: var(--color-parchment);
+  --foreground: var(--color-ink);
+  --card: var(--color-parchment-raised);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-parchment-raised);
+  --popover-foreground: var(--color-ink);
+
+  /* The design system's gilt (#b68235) only reaches 3.0:1 against the
+     parchment. The 700/800 ramp steps keep the hue at AA contrast, so every
+     piece of text or border that carries the accent uses those instead. */
+  --primary: var(--color-gilt-700);
+  --primary-foreground: var(--color-parchment);
+  --secondary: var(--color-parchment-raised);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-parchment-raised);
+  --muted-foreground: var(--color-ink-70);
+  --accent: color-mix(in srgb, var(--color-gilt) 12%, transparent);
+  --accent-foreground: var(--color-gilt-800);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: var(--color-divider);
+  --input: var(--color-divider);
+  --ring: var(--color-gilt-700);
+
+  /* Classical's --radius-md is 4px; shadcn derives radius-md as radius * 0.8. */
+  --radius: 5px;
+}
+
+/* Below this width the nav scrolls away with the page rather than sticking, so
+   anchored sections no longer need to clear it. */
+@media (max-width: 760px) {
+  :root {
+    --nav-height: 0px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    @apply font-body;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: 15px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gilt-700);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gilt) 30%, transparent);
+  }
+}
+
+/* — reveal on scroll —
+   `js-reveal` is set on <html> by the inline script in index.html before first
+   paint, and only when the browser supports IntersectionObserver and motion is
+   not reduced. Without it every row renders visible, so the page degrades
+   cleanly with JS off. Kept as CSS rather than utilities because the initial
+   hidden state has to exist before React mounts. */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    background 200ms ease;
+}
+
+.js-reveal [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
