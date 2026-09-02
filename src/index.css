@@ -88,7 +88,7 @@
 
 /* Below this width the nav scrolls away with the page rather than sticking, so
    anchored sections no longer need to clear it. */
-@media (max-width: 760px) {
+@media (width < 760px) {
   :root {
     --nav-height: 0px;
   }

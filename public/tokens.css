@@ -39,5 +39,5 @@
   --page-gutter: 24px;
 
   /* The sticky nav's own height, so anchored sections can scroll clear of it. */
-  --nav-height: 57px;
+  --nav-height: 60px;
 }

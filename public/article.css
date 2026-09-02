@@ -519,7 +519,7 @@
 }
 
 /* — narrow screens — */
-@media (max-width: 760px) {
+@media (width < 760px) {
   .article { padding-top: 48px; }
   .section { padding-top: 40px; }
   .article p, .article li { font-size: 16px; line-height: 28px; }

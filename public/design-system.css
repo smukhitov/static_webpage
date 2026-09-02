@@ -142,7 +142,7 @@ a:hover { color: var(--gilt-800); }
    phone, and a two-row sticky bar costs more of the viewport than it is worth.
    Below this width it scrolls away with the rest of the page, and anchored
    sections no longer need to clear it. */
-@media (max-width: 760px) {
+@media (width < 760px) {
   :root { --nav-height: 0px; }
 
   .site-nav {
