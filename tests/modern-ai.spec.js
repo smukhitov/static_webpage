@@ -19,16 +19,14 @@ describeArticlePage({
   ],
 });
 
-test('opens with a roadmap of the chain it covers', async ({ page }) => {
+// What Part II carries that Part I does not: the roadmap diagram in its header
+// and the failure-mode table that closes it.
+test('opens with a roadmap and closes with the failure-mode table', async ({ page }) => {
   await page.goto('/modern-ai.html');
   await expect(page.locator('main > header svg.diagram')).toHaveCount(1);
-});
 
-test('tabulates the failure modes with a mitigation for each', async ({ page }) => {
-  await page.goto('/modern-ai.html');
   const table = page.locator('#limits table.table');
   await expect(table.locator('thead th')).toHaveCount(3);
-
   const rows = table.locator('tbody tr');
   await expect(rows).toHaveCount(7);
   for (let i = 0; i < 7; i++) {
@@ -36,7 +34,7 @@ test('tabulates the failure modes with a mitigation for each', async ({ page }) 
   }
 });
 
-test('links back to Part I', async ({ page }) => {
+test('hands the reader back to Part I', async ({ page }) => {
   await page.goto('/modern-ai.html');
   await page.locator('.pager-link').first().click();
   await expect(page).toHaveURL(/\/fundamentals\.html#common-algorithms$/);
