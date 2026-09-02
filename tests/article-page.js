@@ -30,13 +30,9 @@ export async function expectClearOfStickyNav(page, link, id) {
 }
 
 /**
- * The checks every chapter page has to pass. Both parts share one layout, one
- * stylesheet pair and one set of accessibility requirements, so the common
- * expectations live here and each spec supplies only what differs.
- *
- * Related assertions are grouped into one test per concern rather than one per
- * assertion: each test costs a page load, and a failure reads better as "the
- * outline is wrong" than as four separate red lines saying the same thing.
+ * The checks every chapter page has to pass; each spec supplies only what
+ * differs. Assertions are grouped one test per concern rather than one per
+ * assertion, because each test costs a page load.
  *
  * @param {object} spec
  * @param {string} spec.path        URL of the page, e.g. '/fundamentals.html'
@@ -65,9 +61,8 @@ export function describeArticlePage({ path, title, headings, diagrams, styleshee
     });
 
     test('wires the site chrome to pages that exist', async ({ page }) => {
-      // The shared design system has to load before the page's own sheet: the
-      // landing page's copy of these tokens now lives in src/index.css, so this
-      // is what still guards the layering until the article pages are ported.
+      // Load order is load-bearing: tokens.css declares what the other two
+      // consume, and article.css overrides design-system.css.
       const sheets = await page
         .locator('link[rel=stylesheet]')
         .evaluateAll((links) => links.map((l) => l.getAttribute('href')));

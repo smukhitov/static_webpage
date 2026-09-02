@@ -9,9 +9,7 @@ export default defineConfig({
     alias: { '@': path.resolve(import.meta.dirname, './src') },
   },
   build: {
-    // The article pages ship from public/ untouched; only the landing page is
-    // built. Keeping the two side by side is what makes the migration
-    // incremental rather than a rewrite.
+    // The article pages ship from public/ untouched; only this is built.
     outDir: 'dist',
   },
   server: { port: 5173 },

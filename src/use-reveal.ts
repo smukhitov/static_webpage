@@ -3,12 +3,12 @@ import { useEffect } from 'react';
 /**
  * Reveals each `[data-reveal]` element as it scrolls into view.
  *
- * Whether the effect runs at all is decided before first paint by the inline
- * script in index.html, which puts `js-reveal` on <html> only when the browser
- * has IntersectionObserver and motion is not reduced. Reading that class here
- * keeps the decision in one place: under reduced motion, or in a browser without
- * IntersectionObserver, every row renders at full opacity and this hook is a
- * no-op.
+ * Whether it runs at all is decided before first paint by index.html, which sets
+ * `js-reveal` on <html> only when IntersectionObserver exists and motion is not
+ * reduced, and index.css keys the initial hidden state on that same class.
+ * Reading the class here rather than re-deciding is what keeps that three-file,
+ * three-language coupling in one place: without it every row renders at full
+ * opacity and this hook is a no-op.
  */
 export function useRevealOnScroll() {
   useEffect(() => {

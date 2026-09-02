@@ -1,14 +1,9 @@
 @import "tailwindcss";
 @import "../public/tokens.css";
 
-/* ==========================================================================
-   Classical, on Tailwind.
-
-   Nothing here declares a value: public/tokens.css does, and this file maps
-   those names into Tailwind's namespace and onto shadcn's component contract
-   (--background, --primary, --border, …) so stock components inherit the
-   parchment and gilt with no per-component overrides.
-   ========================================================================== */
+/* Nothing here declares a token value — public/tokens.css does, for both halves
+   of the site. This file maps those names into Tailwind's namespace and onto
+   shadcn's variable contract, so components inherit the palette untouched. */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,12 +122,8 @@
   }
 }
 
-/* — reveal on scroll —
-   `js-reveal` is set on <html> by the inline script in index.html before first
-   paint, and only when the browser supports IntersectionObserver and motion is
-   not reduced. Without it every row renders visible, so the page degrades
-   cleanly with JS off. Kept as CSS rather than utilities because the initial
-   hidden state has to exist before React mounts. */
+/* The hidden state has to exist before React mounts, so it is CSS rather than
+   utilities. The `js-reveal` coupling is explained in src/use-reveal.ts. */
 .js-reveal [data-reveal] {
   opacity: 0;
   transform: translateY(12px);
