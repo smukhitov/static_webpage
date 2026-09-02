@@ -23,7 +23,7 @@
 .progress-bar {
   height: 100%;
   width: 100%;
-  background: var(--color-accent);
+  background: var(--gilt);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -34,7 +34,7 @@
   font-size: 13px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-accent-700);
+  color: var(--gilt-700);
   margin: 0 0 14px;
 }
 
@@ -51,14 +51,14 @@
   font-size: 17px;
   line-height: 28px;
   margin: 24px 0 0;
-  color: var(--color-ink-82);
+  color: var(--ink-82);
 }
 
 /* — contents — */
 .toc {
   margin-top: 40px;
   padding-top: 24px;
-  border-top: 1px solid var(--color-divider);
+  border-top: 1px solid var(--divider);
 }
 
 .toc-label {
@@ -67,7 +67,7 @@
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-ink-70);
+  color: var(--ink-70);
 }
 
 .toc ul {
@@ -84,21 +84,21 @@
 
 .toc a {
   font-size: 14px;
-  color: var(--color-accent-700);
+  color: var(--gilt-700);
   text-decoration: none;
 }
 
 .toc a::before {
   content: counter(toc, decimal-leading-zero) " ";
-  color: var(--color-ink-70);
+  color: var(--ink-70);
   font-feature-settings: 'tnum' 1;
 }
 
-.toc a:hover { color: var(--color-accent-800); text-decoration: underline; }
+.toc a:hover { color: var(--gilt-800); text-decoration: underline; }
 
 /* Set by article.js on the entry for the section currently on screen. */
 .toc a.is-current {
-  color: var(--color-accent-800);
+  color: var(--gilt-800);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -110,7 +110,7 @@
   scroll-margin-top: calc(var(--nav-height) + 16px);
 }
 
-.section + .section { border-top: 1px solid var(--color-divider); }
+.section + .section { border-top: 1px solid var(--divider); }
 
 .section h2 {
   font-size: clamp(28px, 3.4vw, 36px);
@@ -122,10 +122,10 @@
   font-size: 17px;
   line-height: 30px;
   margin: 0 0 20px;
-  color: var(--color-ink-82);
+  color: var(--ink-82);
 }
 
-.article strong { font-weight: 600; color: var(--color-text); }
+.article strong { font-weight: 600; color: var(--ink); }
 
 .article ul {
   padding-left: 20px;
@@ -136,16 +136,16 @@
   font-size: 17px;
   line-height: 30px;
   margin-bottom: 12px;
-  color: var(--color-ink-82);
+  color: var(--ink-82);
 }
 
-.article li::marker { color: var(--color-accent-600); }
+.article li::marker { color: var(--gilt-600); }
 
 .article code {
   font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.86em;
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
+  background: var(--parchment-raised);
+  border: 1px solid var(--divider);
   border-radius: 3px;
   padding: 1px 5px;
   white-space: nowrap;
@@ -157,8 +157,8 @@
 .callout {
   margin: 0 0 28px;
   padding: 16px 20px;
-  border-left: 3px solid var(--color-accent);
-  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  border-left: 3px solid var(--gilt);
+  background: color-mix(in srgb, var(--gilt) 7%, transparent);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
@@ -169,7 +169,7 @@
   font-size: 12px;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--color-accent-800);
+  color: var(--gilt-800);
   margin-bottom: 6px;
 }
 
@@ -198,7 +198,7 @@
   vertical-align: top;
   padding: 12px 16px 12px 0;
   line-height: 25px;
-  border-bottom: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--divider);
 }
 
 .table th {
@@ -207,12 +207,12 @@
   font-size: 12px;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--color-ink-70);
+  color: var(--ink-70);
   white-space: nowrap;
 }
 
-.table td { color: var(--color-ink-82); }
-.table td:first-child { color: var(--color-text); font-weight: 600; }
+.table td { color: var(--ink-82); }
+.table td:first-child { color: var(--ink); font-weight: 600; }
 .table tbody tr:last-child td { border-bottom: 0; }
 
 /* — chapter pager — */
@@ -222,23 +222,23 @@
   gap: 16px;
   margin-top: 72px;
   padding-top: 32px;
-  border-top: 1px solid var(--color-divider);
+  border-top: 1px solid var(--divider);
 }
 
 .pager-link {
   display: block;
   padding: 18px 20px;
-  border: 1px solid var(--color-divider);
+  border: 1px solid var(--divider);
   border-radius: var(--radius-md);
   text-decoration: none;
-  color: var(--color-text);
+  color: var(--ink);
   transition: background 200ms ease, border-color 200ms ease;
 }
 
 .pager-link:hover {
-  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
-  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
-  color: var(--color-text);
+  background: color-mix(in srgb, var(--gilt) 8%, transparent);
+  border-color: color-mix(in srgb, var(--gilt) 55%, transparent);
+  color: var(--ink);
 }
 
 .pager-next { text-align: right; }
@@ -248,7 +248,7 @@
   font-size: 12px;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--color-accent-700);
+  color: var(--gilt-700);
   margin-bottom: 6px;
 }
 
@@ -269,10 +269,10 @@
 .figure-caption {
   margin: 14px 0 0;
   padding-left: 14px;
-  border-left: 2px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--gilt) 45%, transparent);
   font-size: 13.5px;
   line-height: 24px;
-  color: var(--color-ink-70);
+  color: var(--ink-70);
   max-width: 58ch;
 }
 
@@ -303,10 +303,10 @@
      the two `scroll` ones, so a shadow appears on an edge only while there is
      more diagram past it — and nothing shows at all when it all fits. */
   background:
-    linear-gradient(to right, var(--color-bg), transparent 24px) left / 24px 100% no-repeat local,
-    linear-gradient(to left, var(--color-bg), transparent 24px) right / 24px 100% no-repeat local,
-    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--color-text) 16%, transparent), transparent) left / 12px 100% no-repeat scroll,
-    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--color-text) 16%, transparent), transparent) right / 12px 100% no-repeat scroll;
+    linear-gradient(to right, var(--parchment), transparent 24px) left / 24px 100% no-repeat local,
+    linear-gradient(to left, var(--parchment), transparent 24px) right / 24px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--ink) 16%, transparent), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--ink) 16%, transparent), transparent) right / 12px 100% no-repeat scroll;
 }
 
 .diagram-wide {
@@ -315,14 +315,14 @@
 }
 
 .box {
-  fill: var(--color-surface);
-  stroke: var(--color-ink-55);
+  fill: var(--parchment-raised);
+  stroke: var(--ink-55);
   stroke-width: 1.5;
 }
 
 .box-accent {
-  fill: var(--color-accent-700);
-  stroke: var(--color-accent-700);
+  fill: var(--gilt-700);
+  stroke: var(--gilt-700);
   stroke-width: 1.5;
 }
 
@@ -330,7 +330,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   text-anchor: middle;
-  fill: var(--color-text);
+  fill: var(--ink);
   dominant-baseline: middle;
 }
 
@@ -338,7 +338,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   text-anchor: middle;
-  fill: var(--color-bg);
+  fill: var(--parchment);
   dominant-baseline: middle;
 }
 
@@ -346,7 +346,7 @@
   font-family: var(--font-body);
   font-size: 11px;
   text-anchor: middle;
-  fill: var(--color-ink-78);
+  fill: var(--ink-78);
   dominant-baseline: middle;
 }
 
@@ -355,20 +355,20 @@
   font-family: var(--font-body);
   font-size: 11px;
   text-anchor: middle;
-  fill: color-mix(in srgb, var(--color-accent-100) 85%, transparent);
+  fill: color-mix(in srgb, var(--gilt-100) 85%, transparent);
   dominant-baseline: middle;
 }
 
 .arrow {
-  stroke: var(--color-ink-55);
+  stroke: var(--ink-55);
   stroke-width: 1.5;
   fill: none;
 }
 
-.arrow-head { fill: var(--color-ink-55); }
+.arrow-head { fill: var(--ink-55); }
 
 .axis {
-  stroke: var(--color-ink-55);
+  stroke: var(--ink-55);
   stroke-width: 1;
   /* Also used for open bracket paths, which would otherwise fill black. */
   fill: none;
@@ -377,48 +377,48 @@
 .axis-label {
   font-family: var(--font-body);
   font-size: 11px;
-  fill: var(--color-ink-70);
+  fill: var(--ink-70);
   text-anchor: middle;
 }
 
 .line-train {
   fill: none;
-  stroke: var(--color-ink-70);
+  stroke: var(--ink-70);
   stroke-width: 2;
 }
 
 .line-test {
   fill: none;
-  stroke: var(--color-accent);
+  stroke: var(--gilt);
   stroke-width: 2;
 }
 
 .legend-train {
   font-family: var(--font-body);
   font-size: 11px;
-  fill: var(--color-ink-70);
+  fill: var(--ink-70);
   text-anchor: end;
 }
 
 .legend-test {
   font-family: var(--font-body);
   font-size: 11px;
-  fill: var(--color-accent-700);
+  fill: var(--gilt-700);
   text-anchor: end;
 }
 
 .node {
-  fill: var(--color-surface);
-  stroke: var(--color-ink-55);
+  fill: var(--parchment-raised);
+  stroke: var(--ink-55);
   stroke-width: 1.5;
 }
 
 .node-accent {
-  fill: var(--color-accent-100);
-  stroke: var(--color-accent);
+  fill: var(--gilt-100);
+  stroke: var(--gilt);
 }
 
-.leaf { fill: var(--color-accent-700); }
+.leaf { fill: var(--gilt-700); }
 
 /* — additional diagram parts —
    Used by the deep-learning chapters. Same language as above: surface fills,
@@ -427,22 +427,22 @@
 /* Network edges: far more numerous than arrows, so drawn lighter. */
 .edge {
   fill: none;
-  stroke: color-mix(in srgb, var(--color-text) 28%, transparent);
+  stroke: color-mix(in srgb, var(--ink) 28%, transparent);
   stroke-width: 0.9;
 }
 
 .arrow-accent {
-  stroke: var(--color-accent-700);
+  stroke: var(--gilt-700);
   stroke-width: 1.5;
   fill: none;
 }
 
-.arrow-head-accent { fill: var(--color-accent-700); }
+.arrow-head-accent { fill: var(--gilt-700); }
 
 /* Grouping frames: the repeated transformer block, the tool catalogue. */
 .group-frame {
   fill: none;
-  stroke: var(--color-ink-55);
+  stroke: var(--ink-55);
   stroke-width: 1;
   stroke-dasharray: 4 4;
 }
@@ -452,19 +452,19 @@
   font-weight: var(--font-heading-weight);
   font-size: 12px;
   letter-spacing: 0.06em;
-  fill: var(--color-ink-70);
+  fill: var(--ink-70);
 }
 
 /* Small annotations hung off a line or a box. */
 .note {
   font-family: var(--font-body);
   font-size: 11px;
-  fill: var(--color-ink-70);
+  fill: var(--ink-70);
 }
 
 .note-mid { text-anchor: middle; }
 .note-end { text-anchor: end; }
-.note-accent { fill: var(--color-accent-700); }
+.note-accent { fill: var(--gilt-700); }
 
 /* An eyebrow over a band of the figure ("indexing", "answering"). */
 .band-label {
@@ -473,26 +473,26 @@
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  fill: var(--color-ink-70);
+  fill: var(--ink-70);
 }
 
 /* Attention grid: fill-opacity is set per cell as a presentation attribute. */
 .cell {
-  fill: var(--color-accent-700);
-  stroke: var(--color-bg);
+  fill: var(--gilt-700);
+  stroke: var(--parchment);
   stroke-width: 1;
 }
 
 .cell-masked {
-  fill: var(--color-surface);
-  stroke: var(--color-bg);
+  fill: var(--parchment-raised);
+  stroke: var(--parchment);
   stroke-width: 1;
 }
 
 .tick {
   font-family: var(--font-body);
   font-size: 11px;
-  fill: var(--color-ink-78);
+  fill: var(--ink-78);
   dominant-baseline: middle;
 }
 
@@ -500,13 +500,13 @@
 .tick-mid { text-anchor: middle; }
 
 /* Bars: token probabilities, relative corpus sizes. */
-.bar { fill: color-mix(in srgb, var(--color-accent) 38%, transparent); }
-.bar-lead { fill: var(--color-accent-700); }
+.bar { fill: color-mix(in srgb, var(--gilt) 38%, transparent); }
+.bar-lead { fill: var(--gilt-700); }
 
 /* The ⊕ that closes a residual connection. */
 .op {
-  fill: var(--color-bg);
-  stroke: var(--color-ink-55);
+  fill: var(--parchment);
+  stroke: var(--ink-55);
   stroke-width: 1.5;
 }
 
@@ -515,11 +515,11 @@
   font-size: 13px;
   text-anchor: middle;
   dominant-baseline: middle;
-  fill: var(--color-ink-78);
+  fill: var(--ink-78);
 }
 
 /* — narrow screens — */
-@media (max-width: 760px) {
+@media (width < 760px) {
   .article { padding-top: 48px; }
   .section { padding-top: 40px; }
   .article p, .article li { font-size: 16px; line-height: 28px; }

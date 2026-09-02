@@ -15,9 +15,8 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap"
    >
     <script>
-      // Set before first paint so the reveal rows are hidden from the start,
-      // exactly as the pre-React landing.js did. Without it they would flash in
-      // at full opacity and then be hidden again.
+      // Without this, the reveal rows flash in at full opacity and are then
+      // hidden again. The coupling is explained in src/use-reveal.ts.
       (function () {
         if (!('IntersectionObserver' in window)) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

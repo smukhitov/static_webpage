@@ -1,48 +1,32 @@
 @import "tailwindcss";
-@import "shadcn/tailwind.css";
+@import "../public/tokens.css";
 
-/* ==========================================================================
-   Classical, on Tailwind.
-
-   The token values below are the same ones public/design-system.css serves to
-   the two static article pages — that file stays the source of truth until
-   those pages are ported too, so any change here must be mirrored there.
-
-   shadcn's component contract (--background, --primary, --border, …) is
-   satisfied *from* the Classical ramp rather than beside it, so a stock
-   component picks up the parchment and gilt without per-component overrides.
-   ========================================================================== */
+/* Nothing here declares a token value — public/tokens.css does, for both halves
+   of the site. This file maps those names into Tailwind's namespace and onto
+   shadcn's variable contract, so components inherit the palette untouched. */
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
-  /* — Classical palette, own namespace so it cannot collide with shadcn's
-       --color-accent (which shadcn binds to its hover token). — */
-  --color-parchment: #f3f2f2;
-  --color-parchment-raised: #eae9e9;
-  --color-gilt: #b68235;
-  --color-gilt-100: #fff3e4;
-  --color-gilt-600: #a06f24;
-  --color-gilt-700: #7d5411;
-  --color-gilt-800: #5a3b0a;
+@theme inline {
+  --color-parchment: var(--parchment);
+  --color-parchment-raised: var(--parchment-raised);
+  --color-ink: var(--ink);
+  --color-ink-55: var(--ink-55);
+  --color-ink-70: var(--ink-70);
+  --color-ink-78: var(--ink-78);
+  --color-ink-82: var(--ink-82);
+  --color-gilt: var(--gilt);
+  --color-gilt-100: var(--gilt-100);
+  --color-gilt-600: var(--gilt-600);
+  --color-gilt-700: var(--gilt-700);
+  --color-gilt-800: var(--gilt-800);
+  --color-divider: var(--divider);
 
-  /* The muted ink that carries secondary text and every diagram's line work. */
-  --color-ink: #201f1d;
-  --color-ink-55: color-mix(in srgb, #201f1d 55%, transparent);
-  --color-ink-70: color-mix(in srgb, #201f1d 70%, transparent);
-  --color-ink-78: color-mix(in srgb, #201f1d 78%, transparent);
-  --color-ink-82: color-mix(in srgb, #201f1d 82%, transparent);
-  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
-
-  --font-heading: "Cormorant Garamond", Georgia, serif;
-  --font-body: "Lora", Georgia, serif;
-  --font-sans: "Lora", Georgia, serif;
-
-  /* The shared content column, and the sticky nav's own height so anchored
-     sections can scroll clear of it. */
-  --page-width: 1040px;
-  --page-gutter: 24px;
-  --nav-height: 57px;
+  /* Identity mappings: these names are already Tailwind's. They work only
+     because `inline` keeps the theme from emitting them back into :root. */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-sans: var(--font-body);
 }
 
 @theme inline {
@@ -65,49 +49,28 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-md: var(--radius-md);
 }
 
 :root {
-  --background: var(--color-parchment);
-  --foreground: var(--color-ink);
-  --card: var(--color-parchment-raised);
-  --card-foreground: var(--color-ink);
-  --popover: var(--color-parchment-raised);
-  --popover-foreground: var(--color-ink);
-
-  /* The design system's gilt (#b68235) only reaches 3.0:1 against the
-     parchment. The 700/800 ramp steps keep the hue at AA contrast, so every
-     piece of text or border that carries the accent uses those instead. */
-  --primary: var(--color-gilt-700);
-  --primary-foreground: var(--color-parchment);
-  --secondary: var(--color-parchment-raised);
-  --secondary-foreground: var(--color-ink);
-  --muted: var(--color-parchment-raised);
-  --muted-foreground: var(--color-ink-70);
-  --accent: color-mix(in srgb, var(--color-gilt) 12%, transparent);
-  --accent-foreground: var(--color-gilt-800);
+  --background: var(--parchment);
+  --foreground: var(--ink);
+  --card: var(--parchment-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--parchment-raised);
+  --popover-foreground: var(--ink);
+  --primary: var(--gilt-700);
+  --primary-foreground: var(--parchment);
+  --secondary: var(--parchment-raised);
+  --secondary-foreground: var(--ink);
+  --muted: var(--parchment-raised);
+  --muted-foreground: var(--ink-70);
+  --accent: color-mix(in srgb, var(--gilt) 12%, transparent);
+  --accent-foreground: var(--gilt-800);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: var(--color-divider);
-  --input: var(--color-divider);
-  --ring: var(--color-gilt-700);
-
-  /* Classical's --radius-md is 4px; shadcn derives radius-md as radius * 0.8. */
-  --radius: 5px;
-}
-
-/* Below this width the nav scrolls away with the page rather than sticking, so
-   anchored sections no longer need to clear it. */
-@media (max-width: 760px) {
-  :root {
-    --nav-height: 0px;
-  }
+  --border: var(--divider);
+  --input: var(--divider);
+  --ring: var(--gilt-700);
 }
 
 @layer base {
@@ -135,21 +98,17 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-gilt-700);
+    outline: 2px solid var(--gilt-700);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-gilt) 30%, transparent);
+    background: color-mix(in srgb, var(--gilt) 30%, transparent);
   }
 }
 
-/* — reveal on scroll —
-   `js-reveal` is set on <html> by the inline script in index.html before first
-   paint, and only when the browser supports IntersectionObserver and motion is
-   not reduced. Without it every row renders visible, so the page degrades
-   cleanly with JS off. Kept as CSS rather than utilities because the initial
-   hidden state has to exist before React mounts. */
+/* The hidden state has to exist before React mounts, so it is CSS rather than
+   utilities. The `js-reveal` coupling is explained in src/use-reveal.ts. */
 .js-reveal [data-reveal] {
   opacity: 0;
   transform: translateY(12px);

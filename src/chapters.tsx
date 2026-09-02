@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 
 /**
- * The landing page is the index for both parts. The order here is the order the
- * rows appear in, and every `href` has to resolve to a section that exists on
- * the article page it names.
+ * The order here is the order the rows appear in, and every `href` has to
+ * resolve to a section that exists on the article page it names.
  */
 export type Chapter = {
   num: string;
@@ -23,11 +22,9 @@ export type Part = {
 };
 
 /* The figures are line drawings on a 160×64 grid, inheriting the row's muted
-   ink. `stroke-gilt` / `fill-gilt/14` pick out the one element each diagram is
-   actually about — in the static build those were `.accent-stroke` and
-   `.accent-fill` rules in landing.css, because `var()` is not resolved inside
-   SVG presentation attributes. As Tailwind utilities they need no companion
-   stylesheet at all. */
+   ink. `stroke-gilt` / `fill-gilt/14` pick out what each diagram is about, as
+   utility classes rather than tokens, because `var()` is not resolved inside
+   SVG presentation attributes. */
 
 export const PARTS: Part[] = [
   {

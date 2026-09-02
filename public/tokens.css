@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Classical — the design tokens, and the only place any of them is declared.
+   The article pages link this file directly; src/index.css imports it and maps
+   the names into Tailwind's namespace, so a value changed here changes both.
+   ========================================================================== */
+
+:root {
+  --parchment: #f3f2f2;
+  --parchment-raised: #eae9e9;
+  --ink: #201f1d;
+  --gilt: #b68235;
+  --divider: color-mix(in srgb, var(--ink) 16%, transparent);
+
+  /* --gilt reaches only 3.0:1 against the parchment. The 700/800 steps hold the
+     same hue at AA contrast, so every piece of text or border that carries the
+     accent uses those instead. */
+  --gilt-100: #fff3e4;
+  --gilt-600: #a06f24;
+  --gilt-700: #7d5411;
+  --gilt-800: #5a3b0a;
+
+  --ink-55: color-mix(in srgb, var(--ink) 55%, transparent);
+  --ink-70: color-mix(in srgb, var(--ink) 70%, transparent);
+  --ink-78: color-mix(in srgb, var(--ink) 78%, transparent);
+  --ink-82: color-mix(in srgb, var(--ink) 82%, transparent);
+
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-heading-weight: 600;
+  --font-body: "Lora", Georgia, serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+
+  --radius-md: 4px;
+
+  --page-width: 1040px;
+  --page-gutter: 24px;
+
+  /* The sticky nav's own height, so anchored sections can scroll clear of it. */
+  --nav-height: 60px;
+}
+
+/* Below this width the nav scrolls with the page instead of sticking, so
+   anchored sections no longer need to clear it. */
+@media (width < 760px) {
+  :root {
+    --nav-height: 0px;
+  }
+}

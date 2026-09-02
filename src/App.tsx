@@ -1,8 +1,8 @@
-import { Hero } from '@/components/landing/Hero';
-import { PartSection } from '@/components/landing/PartSection';
-import { SiteNav } from '@/components/landing/SiteNav';
-import { PARTS } from '@/data/chapters';
-import { useRevealOnScroll } from '@/hooks/use-reveal';
+import { Hero } from '@/components/Hero';
+import { PartSection } from '@/components/PartSection';
+import { SiteNav } from '@/components/SiteNav';
+import { PARTS } from '@/chapters';
+import { useRevealOnScroll } from '@/use-reveal';
 
 export default function App() {
   useRevealOnScroll();

@@ -1,49 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap');
 
 /* ==========================================================================
-   Classical — the subset of tokens and component classes this site uses.
-   Source: Claude Design project "Landing page enhancement project", design
-   system `classical-8b4ede6a`. Shared by every page; page-specific rules live
-   in landing.css and article.css.
+   Classical — the component classes this site's static pages use. The tokens
+   they consume are declared in tokens.css, which every page links first.
    ========================================================================== */
-
-:root {
-  --color-bg: #f3f2f2;
-  --color-surface: #eae9e9;
-  --color-text: #201f1d;
-  --color-accent: #b68235;
-  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
-
-  --color-accent-100: #fff3e4;
-  --color-accent-600: #a06f24;
-  --color-accent-700: #7d5411;
-  --color-accent-800: #5a3b0a;
-
-  --font-heading: "Cormorant Garamond", Georgia, serif;
-  --font-heading-weight: 600;
-  --font-body: "Lora", Georgia, serif;
-
-  --space-1: 4.6px;
-  --space-2: 9.2px;
-  --space-3: 13.8px;
-  --space-4: 18.4px;
-
-  --radius-md: 4px;
-
-  /* Derived, used across pages: the muted ink that carries secondary text and
-     the line work in every diagram. */
-  --color-ink-55: color-mix(in srgb, var(--color-text) 55%, transparent);
-  --color-ink-70: color-mix(in srgb, var(--color-text) 70%, transparent);
-  --color-ink-78: color-mix(in srgb, var(--color-text) 78%, transparent);
-  --color-ink-82: color-mix(in srgb, var(--color-text) 82%, transparent);
-
-  /* The shared content column. */
-  --page-width: 1040px;
-  --page-gutter: 24px;
-
-  /* The sticky nav's own height, so anchored sections can scroll clear of it. */
-  --nav-height: 57px;
-}
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -51,8 +11,8 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--parchment);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.55;
@@ -70,27 +30,24 @@ h1, h2, h3, h4, h5, h6 {
 
 p { margin: 0 0 var(--space-3); }
 
-/* The design system's link accent (--color-accent) only reaches 3.0:1 against
-   --color-bg. The 700/800 ramp steps keep the same hue at AA contrast, so link
-   and button text use those instead. */
 a {
-  color: var(--color-accent-700);
+  color: var(--gilt-700);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
 
-a:hover { color: var(--color-accent-800); }
+a:hover { color: var(--gilt-800); }
 
 :focus { outline: none; }
-:focus-visible { outline: 2px solid var(--color-accent-700); outline-offset: 2px; }
-::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+:focus-visible { outline: 2px solid var(--gilt-700); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--gilt) 30%, transparent); }
 
 /* — rules — */
 .hr {
   height: 1px;
   border: 0;
   margin: var(--space-4) 0;
-  background: var(--color-divider);
+  background: var(--divider);
 }
 
 .hr-flush { margin: 0; }
@@ -107,16 +64,16 @@ a:hover { color: var(--color-accent-800); }
   font-weight: var(--font-heading-weight);
   font-size: 14px;
   line-height: 1.2;
-  color: var(--color-text);
+  color: var(--ink);
   background: transparent;
   border: 1px solid transparent;
-  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
 }
 
-.btn-primary { color: var(--color-accent-700); border-color: var(--color-accent-700); }
-.btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
-.btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.btn-primary { color: var(--gilt-700); border-color: var(--gilt-700); }
+.btn-primary:hover { background: color-mix(in srgb, var(--gilt) 12%, transparent); }
+.btn-primary:active { background: color-mix(in srgb, var(--gilt) 22%, transparent); }
 
 /* — navigation — */
 .nav {
@@ -124,7 +81,7 @@ a:hover { color: var(--color-accent-800); }
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--divider);
 }
 
 .nav-brand {
@@ -135,7 +92,7 @@ a:hover { color: var(--color-accent-800); }
 }
 
 .nav a { color: inherit; text-decoration: none; font-size: 14px; }
-.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-700); }
+.nav a:hover, .nav a[aria-current='page'] { color: var(--gilt-700); }
 
 /* ==========================================================================
    Site chrome — the nav row and footer are identical on every page.
@@ -149,12 +106,12 @@ a:hover { color: var(--color-accent-800); }
   position: sticky;
   top: 0;
   z-index: 10;
-  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  background: color-mix(in srgb, var(--parchment) 94%, transparent);
   backdrop-filter: blur(10px);
 }
 
 .site-nav .nav-brand a { text-decoration: none; color: inherit; font-size: inherit; }
-.site-nav .nav-brand a:hover { color: var(--color-accent-700); }
+.site-nav .nav-brand a:hover { color: var(--gilt-700); }
 
 .nav-cta {
   white-space: nowrap;
@@ -175,19 +132,17 @@ a:hover { color: var(--color-accent-800); }
   padding: 48px 0;
   font-size: 13px;
   line-height: 28px;
-  color: var(--color-ink-70);
+  color: var(--ink-70);
 }
 
-.site-footer a { color: var(--color-accent-700); }
+.site-footer a { color: var(--gilt-700); }
 
 /* — narrow screens —
    The nav row cannot fit brand, links and call to action on one line on a
    phone, and a two-row sticky bar costs more of the viewport than it is worth.
    Below this width it scrolls away with the rest of the page, and anchored
    sections no longer need to clear it. */
-@media (max-width: 760px) {
-  :root { --nav-height: 0px; }
-
+@media (width < 760px) {
   .site-nav {
     position: static;
     backdrop-filter: none;

@@ -1,9 +1,8 @@
-import type { Chapter } from '@/data/chapters';
+import type { Chapter } from '@/chapters';
 
 /**
- * One chapter: number, text block, and the line drawing that stands for it.
- * The whole row is the link — a reader aiming at the title, the summary or the
- * figure all land in the same place.
+ * The whole row is the link: number, title, summary and figure all land in the
+ * same place.
  */
 export function ChapterRow({ chapter }: { chapter: Chapter }) {
   return (

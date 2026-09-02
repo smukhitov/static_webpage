@@ -4,20 +4,15 @@
 - create feature branch for each new feature from master branch, commit changes with meaningful messages, and create a pull request for review before merging into the main branch.
 - **This describes how validated work reaches `master` — it is not licence to decide that work is validated.** The user runs everything outward-facing: push, PR, merge, deploy. Commit to the branch, prepare the exact command, and stop. Ask before pushing or opening anything.
 
-## Stack
+## What you must not get wrong
 
-Vite + React + TypeScript + Tailwind v4 + shadcn/ui, built to `dist/` and served by Vercel.
+**The site is two halves.** The landing page (`/`) is React in `src/`. The two article pages (`/fundamentals.html`, `/modern-ai.html`) are hand-written HTML in `public/`, served verbatim. A change to shared appearance has to be checked on both.
 
-The migration is deliberately half-finished, and the halves are different:
+**`public/tokens.css` declares every design token, and nothing else does.** The article pages link it; `src/index.css` imports it and maps the names into Tailwind's namespace. Change a value there and both halves follow. Do not reintroduce a second copy.
 
-- **The landing page** (`/`) is React. It lives in `src/`, and its Classical design tokens are declared in `src/index.css` — as a Tailwind `@theme`, with shadcn's own variables (`--background`, `--primary`, …) derived from them so stock components inherit the palette.
-- **The two article pages** (`/fundamentals.html`, `/modern-ai.html`) are still hand-written HTML in `public/`, served verbatim. They keep loading `public/design-system.css`.
+**Class names like `.chapter`, `.nav-cta` and `.site-nav` carry no styling.** They are the hooks the Playwright suite addresses. Keep them.
 
-So the same token values exist twice, in `src/index.css` and `public/design-system.css`. **Changing one means changing the other** until the article pages are ported too.
-
-Class names like `.chapter`, `.nav-cta` and `.site-nav` survive in the React markup with no styling attached. They are the hooks the Playwright suite addresses; keep them.
-
-`npm test` validates the hand-written HTML (`index.html` + `public/*.html`), builds, then runs Playwright against `dist/`.
+**`npm test` is the only seam.** It validates the hand-written HTML (`index.html` + `public/*.html`), builds, then runs Playwright against `dist/` — not against the dev server, because `dist/` is what Vercel serves.
 
 ## Agent skills
 

@@ -14,7 +14,6 @@ export function Hero() {
         solve — and a diagram for every idea that deserves one.
       </p>
 
-      {/* Quick orientation under the lede: how long this is and what's in it. */}
       <div className="mt-8 flex flex-wrap gap-x-8 gap-y-2.5 text-[13px] leading-[22px] text-ink-70">
         <span>
           <strong className="font-heading text-sm font-semibold text-foreground">2 parts</strong> ·

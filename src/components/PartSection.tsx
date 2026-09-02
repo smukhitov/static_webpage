@@ -1,5 +1,5 @@
-import { ChapterRow } from '@/components/landing/ChapterRow';
-import type { Part } from '@/data/chapters';
+import { ChapterRow } from '@/components/ChapterRow';
+import type { Part } from '@/chapters';
 
 export function PartSection({ part }: { part: Part }) {
   const titleId = `${part.id}-title`;

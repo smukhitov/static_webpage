@@ -17,18 +17,14 @@ Vercel.
 
 ## Stack
 
-Vite + React + TypeScript + Tailwind CSS v4 + shadcn/ui.
+Vite + React + TypeScript + Tailwind CSS v4.
 
-**The migration is half-finished on purpose.** Only the landing page is React;
-the two article pages are still the original hand-written HTML, shipped verbatim
-out of `public/`. That means the Classical design tokens exist twice — as a
-Tailwind `@theme` in `src/index.css`, and as plain custom properties in
-`public/design-system.css`. **Changing one means changing the other** until the
-article pages are ported too. See `CLAUDE.md` for the details.
-
-shadcn's variable contract (`--background`, `--primary`, `--border`, …) is
-derived *from* the Classical palette rather than sitting beside it, so a stock
-shadcn component inherits the parchment and gilt with no per-component overrides.
+Only the landing page is React; the two article pages are still the original
+hand-written HTML, shipped verbatim out of `public/`. Both halves read their
+design tokens from `public/tokens.css` — the article pages link it, and
+`src/index.css` imports it and maps the names into Tailwind's namespace and onto
+the shadcn variable contract (`--background`, `--primary`, `--border`, …) the one
+UI component is built against.
 
 ## Requirements
 
@@ -70,10 +66,6 @@ way Vercel serves them.
 | `npm run test:html` | `html-validate` over the hand-written HTML: `index.html` and the two article pages. The React landing markup is not hand-written, so Playwright and axe cover it instead. |
 | `npm run test:a11y` | Playwright: content, links, layout, and axe-core against WCAG 2 A/AA |
 
-The Playwright suite addresses semantic class names — `.chapter`, `.site-nav`,
-`.nav-cta`, `.part`. Those names survive in the React markup carrying no styling
-at all; they exist as test hooks. **Don't remove them when refactoring.**
-
 First run on a clean machine needs the browser binary:
 
 ```bash
@@ -100,18 +92,17 @@ it ever breaks, adding those two as repository secrets is the documented fix.
 index.html              Vite entry; fonts + the pre-paint reveal script
 src/
   App.tsx               the landing page
-  components/landing/   Hero, SiteNav, PartSection, ChapterRow
-  components/ui/        shadcn components
-  data/chapters.tsx     all 15 chapters, with their SVG diagrams, as typed data
-  hooks/use-reveal.ts   IntersectionObserver scroll reveal
-  index.css             design tokens — Classical mapped onto shadcn's contract
-public/                 copied to dist/ verbatim: the two article pages + their CSS/JS
+  chapters.tsx          all 15 chapters, with their SVG diagrams, as typed data
+  use-reveal.ts         IntersectionObserver scroll reveal
+  utils.ts              cn(), the Tailwind class merger
+  index.css             maps public/tokens.css onto Tailwind and shadcn
+  components/           Hero, SiteNav, PartSection, ChapterRow, button
+public/                 copied to dist/ verbatim: the two article pages, their
+                        CSS/JS, and tokens.css
 tests/                  Playwright specs
 docs/agents/            conventions for agents working in this repo
 ```
 
-Scroll reveal is decided before first paint: `index.html` sets `js-reveal` on
-`<html>` only when `IntersectionObserver` exists and motion isn't reduced, and
-the hook reads that class rather than re-deciding. Note that the landing page is
-client-rendered — with JS off it renders nothing at all, unlike the two article
-pages, which stay fully readable. Prerendering it would fix that.
+The landing page is client-rendered: with JS off it renders nothing at all,
+unlike the two article pages, which stay fully readable. Prerendering it would
+fix that.

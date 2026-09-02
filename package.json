@@ -21,14 +21,12 @@
     "@vitejs/plugin-react": "^6.1.1",
     "html-validate": "^8.24.0",
     "http-server": "^14.1.1",
-    "shadcn": "^4.20.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.2"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

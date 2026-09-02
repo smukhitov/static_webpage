@@ -1,9 +1,8 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
-// The suite runs against the built site, not the dev server: dist/ is what
-// Vercel serves, and it is the only place where the React landing page and the
-// two still-static article pages sit side by side.
+// The suite runs against dist/ rather than the dev server: dist/ is what Vercel
+// serves, and the only place the React and static halves sit side by side.
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
